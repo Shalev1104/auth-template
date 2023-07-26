@@ -31,11 +31,13 @@
     "class-validator": "^0.14.0",
     "csurf": "^1.11.0",
     "helmet": "^7.0.0",
-    "knex": "^2.5.1",
-    "pg": "^8.11.1",
     "joi": "^17.9.2",
+    "knex": "^2.5.1",
+    "mongodb": "^5.7.0",
+    "pg": "^8.11.1",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "uuid-validate": "^0.0.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
@@ -47,6 +49,8 @@
     "@types/node": "^20.3.1",
     "@types/pg": "^8.10.2",
     "@types/supertest": "^2.0.12",
+    "@types/uuid": "^9.0.2",
+    "@types/uuid-validate": "^0.0.1",
     "@typescript-eslint/eslint-plugin": "^5.59.11",
     "@typescript-eslint/parser": "^5.59.11",
     "eslint": "^8.42.0",
