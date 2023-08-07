@@ -1,0 +1,115 @@
+{
+  "id": "root",
+  "type": "Messages",
+  "messages": [
+    {
+      "type": "Standard",
+      "msgId": "dsadsadsakdsa",
+      "value": "Welcome to the chatbot builder!"
+    },
+    { "type": "File", "fileId": "dsajdklsa", "name": "sdjfkdsk" }
+  ],
+  "children": [
+    {
+      "id": "kdjasld",
+      "type": "Question",
+      "question": "dsanjkdsakda",
+      "choices": [
+        { "id": "fjkhfdjks", "value": "hdhjkfjkds" },
+        { "id": "jkhdjkfjkds", "value": "djsfjdsfds" },
+        { "id": "jhfdjkshfjkds", "value": "fjdsfjdjkfhdsjk" }
+      ],
+      "children": [
+        {
+          "id": "fjkhfdjks",
+          "type": "Form",
+          "inputs": [
+            {
+              "type": "string",
+              "label": "Enter your bot's name:",
+              "placeholder": "Bot name"
+            },
+            {
+              "type": "number",
+              "label": "Enter your bot's age:",
+              "placeholder": "Bot age"
+            },
+            {
+              "type": "date",
+              "label": "Enter your bot's birthdate:",
+              "placeholder": "Bot birthdate"
+            }
+          ],
+          "children": []
+        },
+        {
+          "id": "jkhdjkfjkds",
+          "type": "Logic",
+          "logic": {
+            "AND": [
+              {
+                "left": "hjksdhfdjjfdks",
+                "operator": "=",
+                "right": "fjksdhfkjdsnjvs"
+              },
+              {
+                "OR": [
+                  {
+                    "left": "9",
+                    "operator": "<",
+                    "right": "92"
+                  },
+                  {
+                    "left": "dsjknjkd",
+                    "operator": "<>",
+                    "right": "vjnvjkf"
+                  }
+                ]
+              }
+            ]
+          },
+          "onSuccessId": "mkfgklfd",
+          "onFailId": "knfkvnfd",
+          "children": [
+            {
+              "id": "mkfgklfd",
+              "type": "Messages",
+              "messages": [
+                {
+                  "type": "Standard",
+                  "msgId": "ckjdskckljckds",
+                  "value": "Your chatbot has been created successfully!"
+                }
+              ],
+              "children": []
+            },
+            {
+              "id": "knfkvnfd",
+              "type": "Messages",
+              "messages": [
+                {
+                  "type": "Standard",
+                  "msgId": "kjkkdjsajdklsa",
+                  "value": "Chatbots are AI-powered conversational agents."
+                }
+              ],
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "mlkmclksamlksa",
+          "type": "Messages",
+          "messages": [
+            {
+              "type": "Standard",
+              "msgId": "mmcsalkksa",
+              "value": "Chatbots are AI-powered conversational agents."
+            }
+          ],
+          "children": []
+        }
+      ]
+    }
+  ]
+}

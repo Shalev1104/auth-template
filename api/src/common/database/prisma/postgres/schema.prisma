@@ -1,0 +1,247 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../../../node_modules/@prisma/postgres/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_DATABASE_URL")
+}
+
+model ActionType {
+  typeId         String          @id @map("type_id") @db.VarChar(32)
+  typeName       String          @map("type_name") @db.VarChar(64)
+  requestActions RequestAction[]
+
+  @@map("action_types")
+}
+
+model LocalCredential {
+  userId   String @id @map("user_id") @db.VarChar
+  password String @db.VarChar
+  user     User   @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("local_credentials")
+}
+
+model Priority {
+  priorityId   String    @id @map("priority_id") @db.VarChar(32)
+  priorityName String    @unique @map("priority_name") @db.VarChar(64)
+  order        Int       @unique @default(autoincrement())
+  requests     Request[]
+
+  @@map("priorities")
+}
+
+model RequestAction {
+  actionId  String   @id @default(uuid()) @map("action_id") @db.Uuid
+  requestId String   @map("request_id") @db.Uuid
+  typeId    String   @map("type_id") @db.VarChar
+  value     String   @db.VarChar
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdBy String?  @map("created_by") @db.VarChar
+
+  actionType ActionType @relation(fields: [typeId], references: [typeId], onDelete: NoAction, onUpdate: NoAction)
+  users      User?      @relation(fields: [createdBy], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  requests   Request    @relation(fields: [requestId], references: [requestId], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("request_actions")
+}
+
+model RequestAssignees {
+  userId    String @map("user_id") @db.VarChar
+  requestId String @map("request_id") @db.Uuid
+
+  requests Request @relation(fields: [requestId], references: [requestId], onDelete: NoAction, onUpdate: NoAction)
+  users    User    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([userId, requestId])
+  @@map("request_assignees")
+}
+
+model RequestBlockedNode {
+  nodeId    String @map("node_id") @db.VarChar
+  requestId String @map("request_id") @db.Uuid
+
+  requests Request @relation(fields: [requestId], references: [requestId], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([nodeId, requestId])
+  @@map("request_blocked_node")
+}
+
+model RequestFile {
+  fileId     String   @id @default(uuid()) @map("file_id") @db.Uuid
+  requestId  String   @map("request_id") @db.Uuid
+  name       String   @db.VarChar
+  uploadedBy String   @map("uploaded_by") @db.VarChar
+  uploadedAt DateTime @default(now()) @map("uploaded_at") @db.Timestamptz(6)
+
+  requests Request @relation(fields: [requestId], references: [requestId], onDelete: Cascade, onUpdate: NoAction)
+  users    User    @relation(fields: [uploadedBy], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("request_files")
+}
+
+model RequestMessage {
+  messageId String   @id @default(uuid()) @map("message_id") @db.Uuid
+  requestId String   @map("request_id") @db.Uuid
+  value     String   @db.VarChar
+  createdBy String   @map("created_by") @db.VarChar
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  requests Request @relation(fields: [requestId], references: [requestId], onDelete: Cascade, onUpdate: NoAction)
+  users    User    @relation(fields: [createdBy], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("request_messages")
+}
+
+model RequestOutput {
+  inputId   String @map("input_id") @db.VarChar
+  nodeId    String @map("node_id") @db.VarChar
+  requestId String @map("request_id") @db.Uuid
+  value     String @db.VarChar
+
+  requests Request @relation(fields: [requestId], references: [requestId], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([inputId, nodeId])
+  @@map("request_outputs")
+}
+
+model RequestParticipant {
+  userId    String @map("user_id") @db.VarChar
+  requestId String @map("request_id") @db.Uuid
+
+  users    User    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  requests Request @relation(fields: [requestId], references: [requestId], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([userId, requestId])
+  @@map("request_participants")
+}
+
+model RequestVariable {
+  varId     String @map("var_id") @db.VarChar
+  nodeId    String @map("node_id") @db.VarChar
+  requestId String @map("request_id") @db.Uuid
+  value     String @db.VarChar
+
+  requests Request @relation(fields: [requestId], references: [requestId], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([varId, nodeId])
+  @@map("request_variables")
+}
+
+model Request {
+  requestId   String   @id @default(uuid()) @map("request_id") @db.Uuid
+  title       String   @db.VarChar(32)
+  description String?  @db.Text
+  createdBy   String   @map("created_by") @db.VarChar
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  treeId      String?  @map("tree_id") @db.Uuid
+  treeVersion String?  @map("tree_version") @db.VarChar(36)
+  nodeId      String?  @map("node_id") @db.VarChar(32)
+  isFinished  Boolean  @default(false) @map("is_finished")
+  priorityId  String   @map("priority_id") @db.VarChar
+  statusId    String   @map("status_id") @db.VarChar
+  substatusId String?  @map("substatus_id") @db.Uuid
+  modifiedBy  String   @map("modified_by") @db.VarChar
+  modifiedAt  DateTime @default(now()) @map("modified_at") @db.Timestamptz(6)
+
+  requestActions                 RequestAction[]
+  requestAssignees               RequestAssignees[]
+  requestBlockedNode             RequestBlockedNode[]
+  requestFiles                   RequestFile[]
+  requestMessages                RequestMessage[]
+  requestOutputs                 RequestOutput[]
+  requestParticipants            RequestParticipant[]
+  requestVariables               RequestVariable[]
+  substatuses                    Substatus?           @relation(fields: [statusId, substatusId], references: [statusId, substatusId], onDelete: SetNull)
+  priorities                     Priority             @relation(fields: [priorityId], references: [priorityId], onDelete: NoAction, onUpdate: NoAction)
+  usersRequestsCreatedByTousers  User                 @relation("requests_created_byTousers", fields: [createdBy], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  statuses                       Status               @relation(fields: [statusId], references: [statusId], onDelete: NoAction, onUpdate: NoAction)
+  trees                          Tree?                @relation(fields: [treeId], references: [treeId], onDelete: NoAction, onUpdate: NoAction)
+  usersRequestsModifiedByTousers User                 @relation("requests_modified_byTousers", fields: [modifiedBy], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("requests")
+}
+
+model Status {
+  statusId   String @id @map("status_id") @db.VarChar(32)
+  statusName String @unique @map("status_name") @db.VarChar(64)
+
+  requests    Request[]
+  substatuses Substatus[]
+
+  @@map("statuses")
+}
+
+model Substatus {
+  statusId      String @map("status_id") @db.VarChar
+  substatusId   String @default(uuid()) @map("substatus_id") @db.Uuid
+  substatusName String @unique @map("substatus_name") @db.VarChar(64)
+  treeId        String @map("tree_id") @db.Uuid
+
+  requests Request[]
+  statuses Status    @relation(fields: [statusId], references: [statusId], onDelete: NoAction, onUpdate: NoAction)
+  trees    Tree      @relation(fields: [treeId], references: [treeId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([statusId, substatusId])
+  @@map("substatuses")
+}
+
+model TreeMember {
+  treeId String @map("tree_id") @db.Uuid
+  userId String @map("user_id") @db.VarChar
+  role   String @db.VarChar(32)
+
+  treeRoles TreeRole @relation(fields: [role], references: [role], onDelete: NoAction)
+  users     User     @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  trees     Tree     @relation(fields: [treeId], references: [treeId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([treeId, userId])
+  @@map("tree_members")
+}
+
+model TreeRole {
+  role        String @id @db.VarChar(32)
+  name        String @db.VarChar(64)
+  description String @db.VarChar(256)
+
+  treeMembers TreeMember[]
+
+  @@map("tree_roles")
+}
+
+model Tree {
+  treeId   String  @id @default(uuid()) @map("tree_id") @db.Uuid
+  treeName String  @unique @map("tree_name") @db.VarChar(64)
+  isActive Boolean @default(false) @map("is_active")
+
+  requests    Request[]
+  substatuses Substatus[]
+  treeMembers TreeMember[]
+
+  @@map("trees")
+}
+
+model User {
+  userId         String  @id @default(uuid()) @map("user_id") @db.VarChar
+  emailAddress   String  @unique @map("email") @db.VarChar(255)
+  firstName      String  @map("first_name") @db.VarChar
+  lastName       String  @map("last_name") @db.VarChar
+  authStrategy   String  @map("auth_strategy") @db.VarChar
+  avatarImageUrl String? @map("avatar_url") @db.VarChar
+
+  localCredentials                  LocalCredential?
+  requestActions                    RequestAction[]
+  requestAssignees                  RequestAssignees[]
+  requestFiles                      RequestFile[]
+  requestMessages                   RequestMessage[]
+  requestParticipants               RequestParticipant[]
+  requestsRequestsCreatedByTousers  Request[]            @relation("requests_created_byTousers")
+  requestsRequestsModifiedByTousers Request[]            @relation("requests_modified_byTousers")
+  treeMembers                       TreeMember[]
+
+  @@index([firstName, lastName], name: "fullName")
+  @@index([emailAddress])
+  @@map("users")
+}

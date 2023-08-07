@@ -1,10 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { configSchemaValidation } from 'src/common/validations/env.schema-validator';
-import { AppService } from './app.service';
-import { DatabaseModule } from 'src/common/databases/database.module';
+import { DatabaseModule } from './common/database/database.module';
 
 @Module({
   imports: [
@@ -14,7 +12,5 @@ import { DatabaseModule } from 'src/common/databases/database.module';
     CqrsModule,
     DatabaseModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
