@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
-import { configSchemaValidation } from 'src/common/validations/env.schema-validator';
-import { DatabaseModule } from './common/database/database.module';
+import { configSchemaValidation } from '@common/validations/env-schema.validator';
+import { DatabaseModule } from '@common/database/database.module';
+import { AuthModule } from '@auth/auth.module';
+import { Module } from '@nestjs/common';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { DatabaseModule } from './common/database/database.module';
     }),
     CqrsModule,
     DatabaseModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
