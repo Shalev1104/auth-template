@@ -2,14 +2,17 @@ import { ValueObject } from '@common/ddd/value-object';
 import { AuthStrategy } from '@common/http/user';
 import { Email } from './Email.vo';
 import { HashedPassword } from './HashedPassword.vo';
+import { ForbiddenException } from '@nestjs/common';
+
+export type LocalStrategy = typeof AuthStrategy.Local;
+export type ExternalStrategies = Exclude<AuthStrategy, LocalStrategy>;
 
 interface LocalCredentials {
   readonly email: Email;
   readonly hashedPassword: HashedPassword;
-  readonly authStrategy: AuthStrategy.Local;
+  readonly authStrategy: LocalStrategy;
 }
 
-type ExternalStrategies = AuthStrategy.Google | AuthStrategy.Facebook;
 interface ExternalCredentials {
   readonly email: Email;
   readonly authStrategy: ExternalStrategies;
@@ -52,17 +55,16 @@ export class AuthCredentials<Strategy extends AuthStrategy> extends ValueObject<
     Conditional getter that should be called only
     for local users since they store password information
   */
-  get hashedPassword(): Strategy extends AuthStrategy.Local
+  get hashedPassword(): Strategy extends LocalStrategy
     ? HashedPassword
     : never {
     if (this.props.authStrategy === AuthStrategy.Local) {
-      return this.props.hashedPassword as Exclude<
-        Strategy,
-        AuthStrategy.Local
-      > extends AuthStrategy.Local
+      return this.props.hashedPassword as Strategy extends LocalStrategy
         ? HashedPassword
         : never;
     }
-    throw new Error('password are not available for external strategies.');
+    throw new ForbiddenException(
+      'password are not available for external strategies.',
+    );
   }
 }

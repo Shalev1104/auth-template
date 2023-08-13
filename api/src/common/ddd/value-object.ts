@@ -17,6 +17,7 @@ export abstract class ValueObject<T> {
   toString(): string {
     return JSON.stringify(this.props);
   }
+  catch?(): void;
 
   abstract validate(): boolean;
 
@@ -25,10 +26,12 @@ export abstract class ValueObject<T> {
     Class extends ValueObject<ClassProps>,
   >(VOClass: new (props: ClassProps) => Class, props: ClassProps): Class {
     const vo = new VOClass(props);
-    if (!vo.validate())
+    if (!vo.validate()) {
+      vo.catch?.();
       throw new BadRequestException(
         `${VOClass.constructor.name} cannot be validated`,
       );
+    }
     return vo;
   }
 }

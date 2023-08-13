@@ -1,12 +1,18 @@
 import { User } from '@auth/domain/User.model';
 import { User as SemiUserEntity } from '@prisma/postgres/client';
 import { EntityMapper } from '@common/database/entity.mapper';
+import {
+  nullToUndefinedOrValue,
+  undefinedToNullOrValue,
+} from '@common/http/casts';
 import { AuthCredentials } from '@auth/domain/value-objects/AuthCredentials.vo';
 import { Email } from '@auth/domain/value-objects/Email.vo';
 import { HashedPassword } from '@auth/domain/value-objects/HashedPassword.vo';
 import { UserProfile } from '@auth/domain/value-objects/UserProfile.vo';
 import { Injectable } from '@nestjs/common';
 import { UserResponseDto } from '../http/dtos/user.dto';
+import { AuthStrategy } from '@common/http/user';
+import { MissingPasswordException } from '@auth/domain/exceptions/missing-password.exception';
 
 export interface UserEntity extends SemiUserEntity {
   localCredentials: {
@@ -19,17 +25,27 @@ export class UserMapper
   implements EntityMapper<User, UserEntity, UserResponseDto>
 {
   toDomain(entity: UserEntity): User {
-    return new User(
-      new AuthCredentials({
-        authStrategy: entity.authStrategy as any,
+    let credentials: AuthCredentials<AuthStrategy>;
+    if (entity.authStrategy === 'Local') {
+      if (!entity.localCredentials) throw new MissingPasswordException();
+
+      credentials = new AuthCredentials({
+        authStrategy: entity.authStrategy,
         email: new Email(entity.emailAddress),
-        ...(entity.localCredentials && {
-          hashedPassword: new HashedPassword(entity.localCredentials.password),
-        }),
-      }),
+        hashedPassword: new HashedPassword(entity.localCredentials.password),
+      });
+    } else {
+      credentials = new AuthCredentials({
+        authStrategy: entity.authStrategy,
+        email: new Email(entity.emailAddress),
+      });
+    }
+
+    return new User(
+      credentials,
       new UserProfile({
-        firstName: entity.firstName,
-        lastName: entity.lastName,
+        name: entity.name,
+        avatarImageUrl: nullToUndefinedOrValue(entity.avatarImageUrl),
       }),
       entity.userId,
     );
@@ -39,9 +55,8 @@ export class UserMapper
     return {
       userId: user.userId.toString(),
       authStrategy: user.authStrategy,
-      avatarImageUrl: null,
-      firstName: user.userProfile.firstName,
-      lastName: user.userProfile.lastName,
+      avatarImageUrl: undefinedToNullOrValue(user.userProfile.avatarImageUrl),
+      name: user.userProfile.name,
       emailAddress: user.email.address,
       localCredentials: { password: user.hashedPassword.password },
     };
@@ -51,11 +66,11 @@ export class UserMapper
     return {
       emailAddress: domain.email.address,
       lastLoginAt: domain.lastLoginAt,
+      strategy: domain.authStrategy,
       userId: domain.userId.toString(),
       userProfile: {
-        displayName: domain.userProfile.displayName,
-        firstName: domain.userProfile.firstName,
-        lastName: domain.userProfile.lastName,
+        name: domain.userProfile.name,
+        avatarImageUrl: domain.userProfile.avatarImageUrl,
       },
     };
   }

@@ -28,7 +28,6 @@ export class UserRepository
     });
 
     if (!entity) return undefined;
-    if (!entity.localCredentials) return undefined;
 
     return this.userMapper.toDomain(entity);
   };

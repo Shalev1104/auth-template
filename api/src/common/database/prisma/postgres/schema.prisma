@@ -224,12 +224,11 @@ model Tree {
 }
 
 model User {
-  userId         String  @id @default(uuid()) @map("user_id") @db.VarChar
-  emailAddress   String  @unique @map("email") @db.VarChar(255)
-  firstName      String  @map("first_name") @db.VarChar
-  lastName       String  @map("last_name") @db.VarChar
-  authStrategy   String  @map("auth_strategy") @db.VarChar
-  avatarImageUrl String? @map("avatar_url") @db.VarChar
+  userId         String         @id @default(uuid()) @map("user_id") @db.VarChar
+  emailAddress   String         @unique @map("email") @db.VarChar(255)
+  name           String         @map("full_name") @db.VarChar
+  authStrategy   AuthStrategy @map("auth_strategy")
+  avatarImageUrl String?        @map("avatar_url") @db.VarChar
 
   localCredentials                  LocalCredential?
   requestActions                    RequestAction[]
@@ -241,7 +240,14 @@ model User {
   requestsRequestsModifiedByTousers Request[]            @relation("requests_modified_byTousers")
   treeMembers                       TreeMember[]
 
-  @@index([firstName, lastName], name: "fullName")
   @@index([emailAddress])
   @@map("users")
+}
+
+enum AuthStrategy {
+  Local
+  Google
+  Facebook
+  Github
+	@@map("AuthStrategies")
 }

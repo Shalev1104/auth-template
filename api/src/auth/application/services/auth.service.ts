@@ -1,4 +1,3 @@
-import { InvalidTokenException } from '@auth/domain/exceptions/invalid-token.exception';
 import { TokenVerifyFailedException } from '@auth/domain/exceptions/token-verify-failed.exception';
 import { Uuid } from '@common/ddd/uuid';
 import { Cookies, authCookieOptions } from '@common/http/cookies';
@@ -7,7 +6,6 @@ import {
   AccessToken,
   RefreshToken,
   TokenPayload,
-  BearerToken,
   AccessTokenOrRefreshToken,
   JWTDecodedToken,
 } from '@common/http/tokens';
@@ -18,6 +16,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { BearerTokenService } from './bearer-token.service';
 
 enum TokenExpirationInSeconds {
   Access = 20 * 60, // Every 20 minutes
@@ -26,7 +25,10 @@ enum TokenExpirationInSeconds {
 
 @Injectable()
 export class AuthenticationService {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    protected jwtService: JwtService,
+    protected bearerTokenService: BearerTokenService,
+  ) {}
 
   async createAuthenticationTokens(
     userId: UserId,
@@ -62,10 +64,7 @@ export class AuthenticationService {
   }
 
   extractBearerTokenFromAuthorizationHeader(authorizationHeader: string) {
-    if (!BearerToken.validate(authorizationHeader))
-      throw new InvalidTokenException();
-
-    return BearerToken.fromBearerToken(authorizationHeader);
+    return this.bearerTokenService.fromBearerToToken(authorizationHeader);
   }
 
   setAuthenticationTokensToResponseCookie(
@@ -75,7 +74,7 @@ export class AuthenticationService {
   ) {
     response.setHeader(
       'Authorization',
-      BearerToken.fromToken(accessToken).toString(),
+      this.bearerTokenService.fromTokenToBearer(accessToken),
     );
 
     response.cookie(Cookies.AccessToken, accessToken, {

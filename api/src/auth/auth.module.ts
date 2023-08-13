@@ -13,21 +13,31 @@ import { UserRepository } from './infrastructure/database/user.db-repository';
 import { UserMapper } from './infrastructure/database/user.mapper';
 import { AuthController } from './infrastructure/http/auth.controller';
 import { UserController } from './infrastructure/http/user.controller';
+import { BearerTokenService } from './application/services/bearer-token.service';
+import { ConnectWithGithubCommandHandler } from './application/commands/connect-github.command';
+import { GithubService } from './application/services/github.service';
+import { HttpModule } from '@nestjs/axios';
 
 const commands = [
   LoginCommandHandler,
   RegisterCommandHandler,
   RefreshAccessTokenCommandHandler,
+  ConnectWithGithubCommandHandler,
 ];
 const queries = [GetUserClaimsQueryHandler];
 const events = [UserCreatedEvent];
-const services = [AuthenticationService, EncryptionService];
+const services = [
+  AuthenticationService,
+  EncryptionService,
+  BearerTokenService,
+  GithubService,
+];
 const repositories = [UserRepository];
 const mappers = [UserMapper];
 const factories = [UserFactory];
 
 @Module({
-  imports: [CqrsModule],
+  imports: [CqrsModule, HttpModule],
   controllers: [AuthController, UserController],
   providers: [
     ...commands,

@@ -1,4 +1,6 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { ExternalStrategies } from '@auth/domain/value-objects/AuthCredentials.vo';
+import { AuthStrategy } from '@common/http/user';
+import { IsEmail, IsNotEmpty, IsEnum, NotEquals } from 'class-validator';
 
 export class UserRequestDto {
   @IsEmail()
@@ -8,20 +10,32 @@ export class UserRequestDto {
   password: string;
 
   @IsNotEmpty()
-  firstName: string;
+  name: string;
+
+  avatarImageUrl?: string;
+}
+
+export class SocialUserRequestDto {
+  @IsEmail()
+  emailAddress: string;
 
   @IsNotEmpty()
-  lastName: string;
+  name: string;
+
   avatarImageUrl?: string;
+
+  @IsEnum(AuthStrategy)
+  @NotEquals(AuthStrategy.Local)
+  strategy: ExternalStrategies;
 }
 
 export class UserResponseDto {
   userId: string;
   emailAddress: string;
+  strategy: AuthStrategy;
   userProfile: {
-    firstName: string;
-    lastName: string;
-    displayName: string;
+    name: string;
+    avatarImageUrl?: string;
   };
   lastLoginAt: Date;
 }

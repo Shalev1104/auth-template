@@ -1,9 +1,8 @@
 import { ValueObject } from '@common/ddd/value-object';
 
 export interface IUserProfile {
-  readonly firstName: string;
-  readonly lastName: string;
-  // avatarImageUrl: string; ** TODO configure file uploads with S3
+  readonly name: string;
+  avatarImageUrl?: string; // ** TODO configure file uploads with S3
 }
 
 export class UserProfile extends ValueObject<IUserProfile> {
@@ -15,15 +14,11 @@ export class UserProfile extends ValueObject<IUserProfile> {
     return true;
   }
 
-  get firstName() {
-    return this.props.firstName;
+  get name() {
+    return this.props.name;
   }
 
-  get lastName() {
-    return this.props.lastName;
-  }
-
-  get displayName() {
-    return `${this.firstName} ${this.lastName}`;
+  get avatarImageUrl() {
+    return this.props.avatarImageUrl;
   }
 }

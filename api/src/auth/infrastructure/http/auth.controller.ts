@@ -15,6 +15,7 @@ import {
   UseInterceptors,
   Body,
   Res,
+  Query,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import {
@@ -23,6 +24,7 @@ import {
 } from './authentication/token.interceptor';
 import { LoginDto } from './dtos/login.dto';
 import { UserRequestDto } from './dtos/user.dto';
+import { ConnectWithGithubCommand } from '@auth/application/commands/connect-github.command';
 
 @Controller(Routers.Auth)
 export class AuthController {
@@ -87,5 +89,17 @@ export class AuthController {
         this.authService.clearAuthenticationTokens(response);
         throw e;
       });
+  }
+
+  @Get(RouterRoutes.Auth.Github)
+  @UseInterceptors(TokenInterceptor)
+  async githubCallback(@Query('code') code: string) {
+    const command = new ConnectWithGithubCommand(code);
+    return await this.commandBus
+      .execute<ConnectWithGithubCommand, AuthenticationTokens>(command)
+      .then((tokens) => ({
+        tokens,
+        response: 'Connected with github',
+      }));
   }
 }
