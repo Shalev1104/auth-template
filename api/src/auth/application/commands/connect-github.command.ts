@@ -5,12 +5,12 @@ import {
   ICommandHandler,
   EventPublisher,
 } from '@nestjs/cqrs';
-import { MissingGithubCode } from '@auth/domain/exceptions/missing-github-code.exception';
 import { GithubService } from '../services/github.service';
 import { UserFactory } from '../factories/user.factory';
 import { AuthStrategy } from '@common/http/user';
 import { User } from '@auth/domain/User.model';
 import { GithubUser } from '@auth/domain/strategies/github.strategy';
+import { MissingOAuthCode } from '@auth/domain/exceptions/missing-oauth-code.exception';
 
 export class ConnectWithGithubCommand implements ICommand {
   constructor(public readonly code: string) {}
@@ -45,7 +45,7 @@ export class ConnectWithGithubCommandHandler implements ICommandHandler {
 
   async execute(command: ConnectWithGithubCommand) {
     const { code } = command;
-    if (!code) throw new MissingGithubCode();
+    if (!code) throw new MissingOAuthCode();
 
     const accessToken = await this.githubService.getGithubAccessToken(code);
     const githubUser = await this.githubService.getGithubUserFromAccessToken(

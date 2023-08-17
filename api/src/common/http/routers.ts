@@ -11,6 +11,7 @@ export namespace RouterRoutes {
     Logout = 'logout',
     RefreshToken = 'refresh',
     Github = 'github',
+    Google = 'google',
   }
   export enum User {
     Claims = 'claims',

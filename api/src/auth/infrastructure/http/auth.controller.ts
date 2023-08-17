@@ -25,6 +25,7 @@ import {
 import { LoginDto } from './dtos/login.dto';
 import { UserRequestDto } from './dtos/user.dto';
 import { ConnectWithGithubCommand } from '@auth/application/commands/connect-github.command';
+import { ConnectWithGoogleCommand } from '@auth/application/commands/connect-google.command';
 
 @Controller(Routers.Auth)
 export class AuthController {
@@ -97,6 +98,18 @@ export class AuthController {
     const command = new ConnectWithGithubCommand(code);
     return await this.commandBus
       .execute<ConnectWithGithubCommand, AuthenticationTokens>(command)
+      .then((tokens) => ({
+        tokens,
+        response: 'Connected with github',
+      }));
+  }
+
+  @Get(RouterRoutes.Auth.Google)
+  @UseInterceptors(TokenInterceptor)
+  async googleCallback(@Query('code') code: string) {
+    const command = new ConnectWithGoogleCommand(code);
+    return await this.commandBus
+      .execute<ConnectWithGoogleCommand, AuthenticationTokens>(command)
       .then((tokens) => ({
         tokens,
         response: 'Connected with github',

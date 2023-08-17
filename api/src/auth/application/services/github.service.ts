@@ -8,9 +8,9 @@ import {
   AccessToken,
   GithubCodeToAccessTokenResponse,
 } from '@common/http/tokens';
-import { InvalidGithubCodeException } from '@auth/domain/exceptions/invalid-github-code.exception';
 import { BearerTokenService } from './bearer-token.service';
 import { GithubUser } from '@auth/domain/strategies/github.strategy';
+import { InvalidOAuthCodeException } from '@auth/domain/exceptions/invalid-oauth-code.exception';
 
 @Injectable()
 export class GithubService extends AuthenticationService {
@@ -38,7 +38,7 @@ export class GithubService extends AuthenticationService {
       .pipe(map((response) => response.data.access_token))
       .pipe(
         catchError(() => {
-          throw new InvalidGithubCodeException();
+          throw new InvalidOAuthCodeException();
         }),
       );
 
@@ -66,11 +66,11 @@ export class GithubService extends AuthenticationService {
     return response;
   }
 
-  get githubAccessTokenUrl() {
+  private get githubAccessTokenUrl() {
     return 'https://github.com/login/oauth/access_token';
   }
 
-  get githubUserUrl() {
+  private get githubUserUrl() {
     return 'https://api.github.com/user';
   }
 
