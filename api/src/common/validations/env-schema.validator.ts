@@ -17,4 +17,10 @@ export const configSchemaValidation = Joi.object({
   LOG_FILE_PATH: Joi.string().default('./logs').required(),
 
   CORS_ALLOW_ORIGINS: Joi.string().required(),
+
+  MAIL_HOST: Joi.string().required(),
+  MAIL_PORT: Joi.number().default(465).required(),
+  MAIL_USER: Joi.string().required(),
+  MAIL_PASSWORD: Joi.string().required(),
+  MAIL_FROM: Joi.string().required(),
 });
