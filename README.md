@@ -1,2 +1,1 @@
-# Sheldon
-conversational chatbot builder
+Auth Template
