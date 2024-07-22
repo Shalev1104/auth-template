@@ -1,10 +1,10 @@
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
-import { configSchemaValidation } from '@common/validations/env-schema.validator';
-import { DatabaseModule } from '@common/database/database.module';
+import { configSchemaValidation } from '@server/env-schema.validator';
+import { DatabaseModule } from '@common/infrastructure/database/database.module';
 import { AuthModule } from '@auth/auth.module';
 import { Module } from '@nestjs/common';
-import { MailModule } from '@common/mail/mail.module';
+import { MailModule } from '@common/infrastructure/communications/mail/mail.module';
 
 @Module({
   imports: [

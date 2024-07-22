@@ -4,7 +4,7 @@ import {
   GetUserByEmail,
   SaveUser,
 } from '@auth/domain/repositories/User.repository';
-import { PostgresRepository } from '@common/database/entity.repository';
+import { PostgresRepository } from '@common/infrastructure/database/entity.repository';
 import { Injectable } from '@nestjs/common';
 import { UserMapper } from './user.mapper';
 

@@ -6,7 +6,7 @@ import {
   EventPublisher,
 } from '@nestjs/cqrs';
 import { UserFactory } from '../factories/user.factory';
-import { AuthStrategy } from '@common/http/user';
+import { AuthStrategy } from '@common/infrastructure/http/user';
 import { GoogleService } from '../services/google.service';
 import { GoogleUser } from '@auth/domain/strategies/google.strategy';
 import { User } from '@auth/domain/User.model';

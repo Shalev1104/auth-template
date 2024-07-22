@@ -1,7 +1,7 @@
 import { GetUserClaimsQuery } from '@auth/application/queries/get-user-claims.query';
 import { AuthenticationService } from '@auth/application/services/auth.service';
-import { Authenticate } from '@common/http/decorators/authenticate.decorator';
-import { Routers, RouterRoutes } from '@common/http/routers';
+import { Authenticate } from '@common/infrastructure/http/decorators/authenticate.decorator';
+import { Routers, RouterRoutes } from '@common/infrastructure/http/routers';
 import { Controller, Get, Req } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { UserResponseDto } from './dtos/user.dto';

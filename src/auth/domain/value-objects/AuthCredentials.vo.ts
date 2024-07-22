@@ -1,5 +1,5 @@
 import { ValueObject } from '@common/ddd/value-object';
-import { AuthStrategy } from '@common/http/user';
+import { AuthStrategy } from '@common/infrastructure/http/user';
 import { Email } from './Email.vo';
 import { HashedPassword } from './HashedPassword.vo';
 import { ForbiddenException } from '@nestjs/common';

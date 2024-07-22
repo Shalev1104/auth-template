@@ -1,7 +1,7 @@
 import { MissingTokenException } from '@auth/domain/exceptions/missing-token.exception';
 import { UserNotFoundException } from '@auth/domain/exceptions/user-not-found.exception';
 import { UserRepository } from '@auth/infrastructure/database/user.db-repository';
-import { AccessToken, RefreshToken } from '@common/http/tokens';
+import { AccessToken, RefreshToken } from '@common/infrastructure/http/tokens';
 import { ICommand, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { AuthenticationService } from '../services/auth.service';
 

@@ -1,4 +1,4 @@
-import { RepositorySave } from '@common/database/entity.repository';
+import { RepositorySave } from '@common/infrastructure/database/entity.repository';
 import { User } from '../User.model';
 
 export type GetUserById = (userId: string) => Promise<User | undefined>;

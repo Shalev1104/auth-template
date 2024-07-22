@@ -1,5 +1,5 @@
 import { UserRequestDto } from '@auth/infrastructure/http/dtos/user.dto';
-import { AccessToken, RefreshToken } from '@common/http/tokens';
+import { AccessToken, RefreshToken } from '@common/infrastructure/http/tokens';
 import {
   ICommand,
   CommandHandler,
@@ -8,7 +8,7 @@ import {
 } from '@nestjs/cqrs';
 import { UserFactory } from '../factories/user.factory';
 import { AuthenticationService } from '../services/auth.service';
-import { AuthStrategy } from '@common/http/user';
+import { AuthStrategy } from '@common/infrastructure/http/user';
 
 export class RegisterCommand implements ICommand {
   constructor(public readonly props: UserRequestDto) {}

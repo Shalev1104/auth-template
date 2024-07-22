@@ -1,4 +1,4 @@
-import { UserId } from '@common/http/user';
+import { UserId } from '@common/infrastructure/http/user';
 import { Logger } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 

@@ -10,7 +10,7 @@ import { UserProfile } from '@auth/domain/value-objects/UserProfile.vo';
 import { UserRepository } from '@auth/infrastructure/database/user.db-repository';
 import { EntityFactory } from '@common/database/entity.factory';
 import { ValueObject } from '@common/ddd/value-object';
-import { AuthStrategy } from '@common/http/user';
+import { AuthStrategy } from '@common/infrastructure/http/user';
 import { Injectable } from '@nestjs/common';
 import { EncryptionService } from '../services/encryption.service';
 import {

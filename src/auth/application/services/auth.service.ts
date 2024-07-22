@@ -1,6 +1,6 @@
 import { TokenVerifyFailedException } from '@auth/domain/exceptions/token-verify-failed.exception';
 import { Uuid } from '@common/ddd/uuid';
-import { Cookies, authCookieOptions } from '@common/http/cookies';
+import { Cookies, authCookieOptions } from '@common/infrastructure/http/cookies';
 import { Request, Response } from 'express';
 import {
   AccessToken,
@@ -8,8 +8,8 @@ import {
   TokenPayload,
   AccessTokenOrRefreshToken,
   JWTDecodedToken,
-} from '@common/http/tokens';
-import { UserId } from '@common/http/user';
+} from '@common/infrastructure/http/tokens';
+import { UserId } from '@common/infrastructure/http/user';
 import {
   Injectable,
   InternalServerErrorException,

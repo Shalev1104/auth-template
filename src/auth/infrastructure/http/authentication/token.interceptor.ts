@@ -1,5 +1,5 @@
 import { AuthenticationService } from '@auth/application/services/auth.service';
-import { AccessToken, RefreshToken } from '@common/http/tokens';
+import { AccessToken, RefreshToken } from '@common/infrastructure/http/tokens';
 import {
   Injectable,
   NestInterceptor,

@@ -2,11 +2,11 @@ import { LoginCommand } from '@auth/application/commands/login.command';
 import { RefreshTokenCommand } from '@auth/application/commands/refresh-access-token.command';
 import { RegisterCommand } from '@auth/application/commands/register.command';
 import { AuthenticationService } from '@auth/application/services/auth.service';
-import { Cookies } from '@common/http/cookies';
-import { Cookie } from '@common/http/decorators/cookie.decorator';
-import { Authenticate } from '@common/http/decorators/authenticate.decorator';
-import { Routers, RouterRoutes } from '@common/http/routers';
-import { RefreshToken } from '@common/http/tokens';
+import { Cookies } from '@common/infrastructure/http/cookies';
+import { Cookie } from '@common/infrastructure/http/decorators/cookie.decorator';
+import { Authenticate } from '@common/infrastructure/http/decorators/authenticate.decorator';
+import { Routers, RouterRoutes } from '@common/infrastructure/http/routers';
+import { RefreshToken } from '@common/infrastructure/http/tokens';
 import { Response } from 'express';
 import {
   Controller,

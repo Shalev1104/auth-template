@@ -1,5 +1,5 @@
 import { ExternalStrategies } from '@auth/domain/value-objects/AuthCredentials.vo';
-import { AuthStrategy } from '@common/http/user';
+import { AuthStrategy } from '@common/infrastructure/http/user';
 import { IsEmail, IsNotEmpty, IsEnum, NotEquals } from 'class-validator';
 
 export class UserRequestDto {

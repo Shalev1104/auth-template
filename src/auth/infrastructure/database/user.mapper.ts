@@ -1,17 +1,17 @@
 import { User } from '@auth/domain/User.model';
 import { User as SemiUserEntity } from '@prisma/postgres/client';
-import { EntityMapper } from '@common/database/entity.mapper';
+import { EntityMapper } from '@common/infrastructure/database/entity.mapper';
 import {
   nullToUndefinedOrValue,
   undefinedToNullOrValue,
-} from '@common/http/casts';
+} from '@common/infrastructure/http/casts';
 import { AuthCredentials } from '@auth/domain/value-objects/AuthCredentials.vo';
 import { Email } from '@auth/domain/value-objects/Email.vo';
 import { HashedPassword } from '@auth/domain/value-objects/HashedPassword.vo';
 import { UserProfile } from '@auth/domain/value-objects/UserProfile.vo';
 import { Injectable } from '@nestjs/common';
 import { UserResponseDto } from '../http/dtos/user.dto';
-import { AuthStrategy } from '@common/http/user';
+import { AuthStrategy } from '@common/infrastructure/http/user';
 import { MissingPasswordException } from '@auth/domain/exceptions/missing-password.exception';
 
 export interface UserEntity extends SemiUserEntity {

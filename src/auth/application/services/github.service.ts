@@ -7,7 +7,7 @@ import { InvalidTokenException } from '@auth/domain/exceptions/invalid-token.exc
 import {
   AccessToken,
   GithubCodeToAccessTokenResponse,
-} from '@common/http/tokens';
+} from '@common/infrastructure/http/tokens';
 import { BearerTokenService } from './bearer-token.service';
 import { GithubUser } from '@auth/domain/strategies/github.strategy';
 import { InvalidOAuthCodeException } from '@auth/domain/exceptions/invalid-oauth-code.exception';

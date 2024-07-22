@@ -7,7 +7,7 @@ import {
 } from '@nestjs/cqrs';
 import { GithubService } from '../services/github.service';
 import { UserFactory } from '../factories/user.factory';
-import { AuthStrategy } from '@common/http/user';
+import { AuthStrategy } from '@common/infrastructure/http/user';
 import { User } from '@auth/domain/User.model';
 import { GithubUser } from '@auth/domain/strategies/github.strategy';
 import { MissingOAuthCode } from '@auth/domain/exceptions/missing-oauth-code.exception';
