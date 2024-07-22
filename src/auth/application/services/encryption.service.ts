@@ -1,5 +1,5 @@
 import { HashedPassword } from '@auth/domain/value-objects/HashedPassword.vo';
-import { ValueObject } from '@common/ddd/value-object';
+import { ValueObject } from '@common/domain/value-object';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 

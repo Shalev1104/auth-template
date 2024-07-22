@@ -1,4 +1,4 @@
-import { ValueObject } from '@common/ddd/value-object';
+import { ValueObject } from '@common/domain/value-object';
 import { InvalidTokenException } from '../exceptions/invalid-token.exception';
 
 export class BearerToken extends ValueObject<string> {

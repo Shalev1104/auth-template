@@ -1,4 +1,4 @@
-import { ValueObject } from '@common/ddd/value-object';
+import { ValueObject } from '@common/domain/value-object';
 
 export class Email extends ValueObject<string> {
   private readonly emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -8,8 +8,7 @@ import { Email } from '@auth/domain/value-objects/Email.vo';
 import { PlainPassword } from '@auth/domain/value-objects/PlainPassword.vo';
 import { UserProfile } from '@auth/domain/value-objects/UserProfile.vo';
 import { UserRepository } from '@auth/infrastructure/database/user.db-repository';
-import { EntityFactory } from '@common/database/entity.factory';
-import { ValueObject } from '@common/ddd/value-object';
+import { ValueObject } from '@common/domain/value-object';
 import { AuthStrategy } from '@common/infrastructure/http/user';
 import { Injectable } from '@nestjs/common';
 import { EncryptionService } from '../services/encryption.service';
@@ -23,9 +22,7 @@ type UserDto<T> = T extends LocalStrategy
   : SocialUserRequestDto;
 
 @Injectable()
-export class UserFactory<T extends AuthStrategy>
-  implements EntityFactory<User<T>>
-{
+export class UserFactory<T extends AuthStrategy> {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly encryptionService: EncryptionService,

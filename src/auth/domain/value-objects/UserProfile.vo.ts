@@ -1,4 +1,4 @@
-import { ValueObject } from '@common/ddd/value-object';
+import { ValueObject } from '@common/domain/value-object';
 
 export interface IUserProfile {
   readonly name: string;

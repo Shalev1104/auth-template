@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { ValueObject } from '@common/ddd/value-object';
+import { ValueObject } from '@common/domain/value-object';
 
 export class PlainPassword extends ValueObject<string> {
   constructor(private readonly _password: string) {

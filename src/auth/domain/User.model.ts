@@ -1,5 +1,5 @@
 import { UserCreatedEvent } from '@auth/application/events/user-created.event';
-import { Uuid } from '@common/ddd/uuid';
+import { Uuid } from '@common/domain/uuid';
 import { AuthStrategy, UserId } from '@common/infrastructure/http/user';
 import { AggregateRoot } from '@nestjs/cqrs';
 import { AuthCredentials } from './value-objects/AuthCredentials.vo';

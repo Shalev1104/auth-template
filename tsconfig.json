@@ -25,10 +25,6 @@
       "@server/*": ["src/server/*"],
       "@auth": ["src/auth"],
       "@auth/*": ["src/auth/*"],
-      "@request-chatbot": ["src/request-chatbot"],
-      "@request-chatbot/*": ["src/request-chatbot/*"],
-      "@tree-management": ["src/tree-management"],
-      "@tree-management/*": ["src/tree-management/*"],
       "@common": ["src/common"],
       "@common/*": ["src/common/*"]
     }

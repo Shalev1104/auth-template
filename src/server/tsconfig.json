@@ -1,11 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "references": [
-    { "path": "../common" },
-    { "path": "../auth" },
-    { "path": "../request-chatbot" },
-    { "path": "../tree-management" }
-  ],
+  "references": [{ "path": "../common" }, { "path": "../auth" }],
   "compilerOptions": {
     "outDir": "../../dist/server",
     "rootDir": "."

@@ -1,4 +1,4 @@
-import { Uuid } from 'src/common/ddd/uuid';
+import { Uuid } from 'src/common/domain/uuid';
 export { AuthStrategy } from '@prisma/postgres/client';
 
 export type UserId = Uuid;

@@ -1,4 +1,4 @@
-import { ValueObject } from '@common/ddd/value-object';
+import { ValueObject } from '@common/domain/value-object';
 
 export class HashedPassword extends ValueObject<string> {
   constructor(private readonly _hashedPassword: string) {

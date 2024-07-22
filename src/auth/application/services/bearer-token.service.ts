@@ -1,5 +1,5 @@
 import { BearerToken } from '@auth/domain/value-objects/BearerToken.vo';
-import { ValueObject } from '@common/ddd/value-object';
+import { ValueObject } from '@common/domain/value-object';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

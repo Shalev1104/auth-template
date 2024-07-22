@@ -1,6 +1,9 @@
 import { TokenVerifyFailedException } from '@auth/domain/exceptions/token-verify-failed.exception';
-import { Uuid } from '@common/ddd/uuid';
-import { Cookies, authCookieOptions } from '@common/infrastructure/http/cookies';
+import { Uuid } from '@common/domain/uuid';
+import {
+  Cookies,
+  authCookieOptions,
+} from '@common/infrastructure/http/cookies';
 import { Request, Response } from 'express';
 import {
   AccessToken,
