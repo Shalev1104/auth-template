@@ -1,26 +1,37 @@
-import * as Joi from 'joi';
+import { z } from 'zod';
+import { Environment } from '@common/domain/environment';
 
-export const configSchemaValidation = Joi.object({
-  NODE_ENV: Joi.string().required(),
-  PORT: Joi.number().default(3000).required(),
+export const StringToNumber = z
+  .custom<number>()
+  .refine((value) => +value)
+  .transform((value) => Number(value));
 
-  POSTGRES_DATABASE_URL: Joi.string().required(),
-  MONGO_DATABASE_URL: Joi.string().required(),
+export const envSchemaValidation = z.object({
+  NODE_ENV: z.nativeEnum(Environment),
+  PORT: StringToNumber.default(5433),
 
-  REDIS_HOST: Joi.string().required(),
-  REDIS_PASS: Joi.string().required(),
-  REDIS_PORT: Joi.number().default(6381).required(),
+  POSTGRES_CLIENT: z.string(),
+  POSTGRES_DATABASE: z.string(),
+  POSTGRES_HOST: z.string(),
+  POSTGRES_PORT: StringToNumber.default(3000),
+  POSTGRES_USER: z.string(),
+  POSTGRES_PASSWORD: z.string(),
 
-  ACCESS_TOKEN_SECRET: Joi.string().required(),
-  COOKIE_PARSER_SECRET: Joi.string().required(),
+  REDIS_HOST: z.string(),
+  REDIS_PASS: z.string(),
+  REDIS_PORT: StringToNumber.default(6381),
 
-  LOG_FILE_PATH: Joi.string().default('./logs').required(),
+  TOKEN_SECRET: z.string(),
+  COOKIE_PARSER_SECRET: z.string(),
 
-  CORS_ALLOW_ORIGINS: Joi.string().required(),
+  LOGS_FILE_PATH: z.string().default('./logs'),
 
-  MAIL_HOST: Joi.string().required(),
-  MAIL_PORT: Joi.number().default(465).required(),
-  MAIL_USER: Joi.string().required(),
-  MAIL_PASSWORD: Joi.string().required(),
-  MAIL_FROM: Joi.string().required(),
+  CORS_ALLOW_ORIGINS: z.string(),
+
+  MAIL_SERVICE: z.string(),
+  MAIL_HOST: z.string(),
+  MAIL_PORT: StringToNumber.default(465),
+  MAIL_USER: z.string(),
+  MAIL_PASSWORD: z.string(),
+  MAIL_FROM: z.string(),
 });
