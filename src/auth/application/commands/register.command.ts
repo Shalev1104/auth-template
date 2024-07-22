@@ -8,7 +8,7 @@ import {
 } from '@nestjs/cqrs';
 import { UserFactory } from '../factories/user.factory';
 import { AuthenticationService } from '../services/auth.service';
-import { AuthStrategy } from '@common/infrastructure/http/user';
+import { AuthStrategy } from '@auth/domain/value-objects/AuthCredentials.vo';
 
 export class RegisterCommand implements ICommand {
   constructor(public readonly props: UserRequestDto) {}
@@ -17,7 +17,7 @@ export class RegisterCommand implements ICommand {
 @CommandHandler(RegisterCommand)
 export class RegisterCommandHandler implements ICommandHandler {
   constructor(
-    private readonly userFactory: UserFactory<typeof AuthStrategy.Local>,
+    private readonly userFactory: UserFactory<AuthStrategy.Local>,
     private readonly eventPublisher: EventPublisher,
     private readonly authenticationService: AuthenticationService,
   ) {}

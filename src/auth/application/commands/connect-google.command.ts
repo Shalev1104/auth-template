@@ -6,12 +6,12 @@ import {
   EventPublisher,
 } from '@nestjs/cqrs';
 import { UserFactory } from '../factories/user.factory';
-import { AuthStrategy } from '@common/infrastructure/http/user';
 import { GoogleService } from '../services/google.service';
 import { GoogleUser } from '@auth/domain/strategies/google.strategy';
 import { User } from '@auth/domain/User.model';
 import { EmailNotVerifiedException } from '@auth/domain/exceptions/email-not-verified.exception';
 import { MissingOAuthCode } from '@auth/domain/exceptions/missing-oauth-code.exception';
+import { AuthStrategy } from '@auth/domain/value-objects/AuthCredentials.vo';
 
 export class ConnectWithGoogleCommand implements ICommand {
   constructor(public readonly code: string) {}

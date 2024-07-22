@@ -1,8 +1,11 @@
 import { UserCreatedEvent } from '@auth/application/events/user-created.event';
 import { Uuid } from '@common/domain/uuid';
-import { AuthStrategy, UserId } from '@common/infrastructure/http/user';
+import { UserId } from '@common/infrastructure/http/user';
 import { AggregateRoot } from '@nestjs/cqrs';
-import { AuthCredentials } from './value-objects/AuthCredentials.vo';
+import {
+  AuthCredentials,
+  AuthStrategy,
+} from './value-objects/AuthCredentials.vo';
 import { UserProfile } from './value-objects/UserProfile.vo';
 
 export class User<

@@ -1,9 +1,14 @@
 import { ValueObject } from '@common/domain/value-object';
-import { AuthStrategy } from '@common/infrastructure/http/user';
 import { Email } from './Email.vo';
 import { HashedPassword } from './HashedPassword.vo';
 import { ForbiddenException } from '@nestjs/common';
 
+export enum AuthStrategy {
+  Local = 'Local',
+  Google = 'Google',
+  Facebook = 'Facebook',
+  Github = 'Github',
+}
 export type LocalStrategy = typeof AuthStrategy.Local;
 export type ExternalStrategies = Exclude<AuthStrategy, LocalStrategy>;
 

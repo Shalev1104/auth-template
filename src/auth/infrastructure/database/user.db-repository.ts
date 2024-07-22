@@ -4,76 +4,48 @@ import {
   GetUserByEmail,
   SaveUser,
 } from '@auth/domain/repositories/User.repository';
-import { PostgresRepository } from '@common/infrastructure/database/entity.repository';
 import { Injectable } from '@nestjs/common';
 import { UserMapper } from './user.mapper';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserSchema } from '@common/infrastructure/database/typeorm/schemas/user.schema';
+import { Repository } from 'typeorm';
 
 @Injectable()
-export class UserRepository
-  extends PostgresRepository
-  implements IUserRepository
-{
-  constructor(private userMapper: UserMapper) {
-    super();
-  }
+export class UserRepository implements IUserRepository {
+  constructor(
+    @InjectRepository(UserSchema)
+    private readonly userDbContext: Repository<UserSchema>,
+    private userMapper: UserMapper,
+  ) {}
 
   getUserById: GetUserById = async (userId) => {
-    const entity = await this.prisma.user.findFirst({
+    const entity = await this.userDbContext.findOne({
       where: {
         userId,
       },
-      include: {
-        localCredentials: true,
-      },
     });
-
     if (!entity) return undefined;
 
     return this.userMapper.toDomain(entity);
   };
 
   getUserByEmail: GetUserByEmail = async (emailAddress) => {
-    const entity = await this.prisma.user.findFirst({
+    const entity = await this.userDbContext.findOne({
       where: {
-        emailAddress,
-      },
-      include: {
-        localCredentials: true,
+        emailAndPasswordLogin: {
+          emailAddress,
+        },
       },
     });
-
     if (!entity) return undefined;
 
     return this.userMapper.toDomain(entity);
   };
 
   save: SaveUser = async (user) => {
-    const entity = this.userMapper.toPersistence(user);
-    const { userId, localCredentials, ...rest } = entity;
-    const newUser = await this.prisma.user.upsert({
-      where: { userId: entity.userId },
-      include: {
-        localCredentials: true,
-      },
-      create: {
-        userId,
-        ...rest,
-        ...(localCredentials && {
-          localCredentials: {
-            create: { password: localCredentials.password },
-          },
-        }),
-      },
-      update: {
-        ...rest,
-        ...(localCredentials && {
-          localCredentials: {
-            update: { password: localCredentials.password },
-          },
-        }),
-      },
-    });
-
-    return this.userMapper.toDomain(newUser);
+    const entity = await this.userDbContext.save(
+      this.userMapper.toPersistence(user),
+    );
+    return this.userMapper.toDomain(entity);
   };
 }

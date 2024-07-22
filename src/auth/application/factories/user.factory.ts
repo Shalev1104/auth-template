@@ -2,6 +2,7 @@ import { User } from '@auth/domain/User.model';
 import { UserAlreadyExistException } from '@auth/domain/exceptions/user-already-exist.exception';
 import {
   AuthCredentials,
+  AuthStrategy,
   LocalStrategy,
 } from '@auth/domain/value-objects/AuthCredentials.vo';
 import { Email } from '@auth/domain/value-objects/Email.vo';
@@ -9,7 +10,6 @@ import { PlainPassword } from '@auth/domain/value-objects/PlainPassword.vo';
 import { UserProfile } from '@auth/domain/value-objects/UserProfile.vo';
 import { UserRepository } from '@auth/infrastructure/database/user.db-repository';
 import { ValueObject } from '@common/domain/value-object';
-import { AuthStrategy } from '@common/infrastructure/http/user';
 import { Injectable } from '@nestjs/common';
 import { EncryptionService } from '../services/encryption.service';
 import {

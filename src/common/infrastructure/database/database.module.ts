@@ -1,8 +1,29 @@
 import { Module } from '@nestjs/common';
-import { PostgresPrismaService } from './prisma/postgres.service';
-import { MongoPrismaService } from './prisma/mongo/mongo.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  providers: [PostgresPrismaService, MongoPrismaService],
+  imports: [
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        host: config.get('POSTGRES_HOST'),
+        port: +config.get('POSTGRES_PORT'),
+        username: config.get('POSTGRES_USER'),
+        password: config.get('POSTGRES_PASSWORD'),
+        database: config.get('POSTGRES_DATABASE'),
+        autoLoadEntities: true,
+        synchronize: true,
+        entities: [
+          'dist/src/common/infrastructure/database/typeorm/schemas/**/*.schema.js',
+        ],
+        seeds: [
+          'dist/src/common/infrastructure/database/typeorm/seeds/**/*.seeder.js',
+        ],
+      }),
+    }),
+  ],
 })
 export class DatabaseModule {}

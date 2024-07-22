@@ -1,6 +1,6 @@
 import { ExternalStrategies } from '@auth/domain/value-objects/AuthCredentials.vo';
-import { AuthStrategy } from '@common/infrastructure/http/user';
-import { IsEmail, IsNotEmpty, IsEnum, NotEquals } from 'class-validator';
+import { OAuthProvider } from '@common/infrastructure/database/typeorm/enums/OAuthProvider.enum';
+import { IsEmail, IsNotEmpty, IsEnum } from 'class-validator';
 
 export class UserRequestDto {
   @IsEmail()
@@ -24,15 +24,14 @@ export class SocialUserRequestDto {
 
   avatarImageUrl?: string;
 
-  @IsEnum(AuthStrategy)
-  @NotEquals(AuthStrategy.Local)
+  @IsEnum(OAuthProvider)
   strategy: ExternalStrategies;
 }
 
 export class UserResponseDto {
   userId: string;
   emailAddress: string;
-  strategy: AuthStrategy;
+  strategy: OAuthProvider;
   userProfile: {
     name: string;
     avatarImageUrl?: string;
