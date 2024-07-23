@@ -3,7 +3,7 @@ import {
   GetUserById,
   GetUserByEmail,
   SaveUser,
-} from '@auth/domain/repositories/User.repository';
+} from '@auth/domain/ports/User.repository';
 import { Injectable } from '@nestjs/common';
 import { UserMapper } from './user.mapper';
 import { InjectRepository } from '@nestjs/typeorm';

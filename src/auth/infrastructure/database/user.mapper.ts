@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserResponseDto } from '../http/dtos/user.dto';
-import { User } from '@auth/domain/User.model';
+import { User } from '@auth/domain/User.aggregate';
 import {
   nullToUndefinedOrValue,
   undefinedToNullOrValue,

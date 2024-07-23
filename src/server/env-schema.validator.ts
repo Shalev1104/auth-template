@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Environment } from '@common/domain/environment';
+import { Environment } from '@server/environment';
 
 export const StringToNumber = z
   .custom<number>()

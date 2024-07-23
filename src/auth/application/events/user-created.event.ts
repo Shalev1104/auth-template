@@ -1,10 +1,6 @@
-import { UserId } from '@common/infrastructure/http/user';
+import { UserCreatedEvent } from '@auth/domain/events/user-created.event';
 import { Logger } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
-
-export class UserCreatedEvent {
-  constructor(public readonly userId: UserId) {}
-}
 
 @EventsHandler(UserCreatedEvent)
 export class UserCreatedEventHandler

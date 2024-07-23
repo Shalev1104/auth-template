@@ -1,4 +1,4 @@
-import { User } from '@auth/domain/User.model';
+import { User } from '@auth/domain/User.aggregate';
 import { UserAlreadyExistException } from '@auth/domain/exceptions/user-already-exist.exception';
 import {
   AuthCredentials,
