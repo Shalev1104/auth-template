@@ -27,11 +27,12 @@ export class LoginCommandHandler implements ICommandHandler {
     const user = await this.userRepository.getUserByEmail(email);
     if (!user) throw new UserNotFoundException();
 
-    const { userId, hashedPassword } = user;
+    const { userId, emailAndPasswordLogin } = user;
+
     if (
       !(await this.encryptionService.verifyPassword(
         password,
-        hashedPassword.password,
+        emailAndPasswordLogin.hashedPassword,
       ))
     )
       throw new IncorrectPasswordException();

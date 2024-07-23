@@ -23,9 +23,9 @@ import {
   AuthenticationTokens,
 } from './authentication/token.interceptor';
 import { LoginDto } from './dtos/login.dto';
-import { UserRequestDto } from './dtos/user.dto';
 import { ConnectWithGithubCommand } from '@auth/application/commands/connect-github.command';
 import { ConnectWithGoogleCommand } from '@auth/application/commands/connect-google.command';
+import { RegisterDto } from './dtos/register.dto';
 
 @Controller(Routers.Auth)
 export class AuthController {
@@ -43,9 +43,9 @@ export class AuthController {
   @UseInterceptors(TokenInterceptor)
   async register(
     @Body()
-    userDto: UserRequestDto,
+    registerDto: RegisterDto,
   ) {
-    const command = new RegisterCommand(userDto);
+    const command = new RegisterCommand(registerDto);
     return await this.commandBus
       .execute<RegisterCommand, AuthenticationTokens>(command)
       .then((tokens) => ({

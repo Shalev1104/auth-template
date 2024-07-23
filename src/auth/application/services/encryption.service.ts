@@ -1,5 +1,3 @@
-import { HashedPassword } from '@auth/domain/value-objects/HashedPassword.vo';
-import { ValueObject } from '@common/domain/value-object';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
@@ -17,8 +15,7 @@ export class EncryptionService {
 
   async hashPlainPassword(plainPw: string) {
     try {
-      const hashedPw = await bcrypt.hash(plainPw, EncryptionService.saltChars);
-      return ValueObject.createValueObjectOrFail(HashedPassword, hashedPw);
+      return await bcrypt.hash(plainPw, EncryptionService.saltChars);
     } catch {
       throw new InternalServerErrorException();
     }

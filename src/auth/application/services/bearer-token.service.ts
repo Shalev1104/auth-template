@@ -1,19 +1,14 @@
-import { BearerToken } from '@auth/domain/value-objects/BearerToken.vo';
-import { ValueObject } from '@common/domain/value-object';
+import { BearerToken } from '@auth/domain/value-objects/Tokens';
+import { validateSchema } from '@common/domain/entity-validate';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class BearerTokenService {
-  fromTokenToBearer(token: string): string {
-    return new BearerToken(token).bearerToken;
+  fromTokenToBearer(token: string): BearerToken {
+    return `Bearer ${token}`;
   }
 
   fromBearerToToken(bearerToken: string): string {
-    const validatedBearerToken = ValueObject.createValueObjectOrFail(
-      BearerToken,
-      bearerToken,
-    );
-
-    return validatedBearerToken.token;
+    return validateSchema(BearerToken, bearerToken).split(' ')[1];
   }
 }

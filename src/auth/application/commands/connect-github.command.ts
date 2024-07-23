@@ -10,7 +10,7 @@ import { UserFactory } from '../factories/user.factory';
 import { User } from '@auth/domain/User.aggregate';
 import { GithubUser } from '@auth/domain/strategies/github.strategy';
 import { MissingOAuthCode } from '@auth/domain/exceptions/missing-oauth-code.exception';
-import { AuthStrategy } from '@auth/domain/value-objects/AuthCredentials.vo';
+import { LoginProvider } from '@auth/domain/value-objects/LoginProvider';
 
 export class ConnectWithGithubCommand implements ICommand {
   constructor(public readonly code: string) {}
@@ -20,24 +20,22 @@ export class ConnectWithGithubCommand implements ICommand {
 export class ConnectWithGithubCommandHandler implements ICommandHandler {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly userFactory: UserFactory<typeof AuthStrategy.Github>,
+    private readonly userFactory: UserFactory,
     private readonly eventPublisher: EventPublisher,
     private readonly githubService: GithubService,
   ) {}
 
-  private async getOrRegisterUser(
-    githubUser: GithubUser,
-  ): Promise<User<typeof AuthStrategy.Github>> {
-    const user: User<typeof AuthStrategy.Github> | undefined =
-      await this.userRepository.getUserById(githubUser.id.toString());
+  private async getOrRegisterUser(githubUser: GithubUser): Promise<User> {
+    const user: User | undefined = await this.userRepository.getUserById(
+      githubUser.id.toString(),
+    );
 
     if (user) return user;
 
     return this.eventPublisher.mergeObjectContext(
-      await this.userFactory.create({
+      await this.userFactory.createUser(LoginProvider.Github, {
         emailAddress: githubUser.email,
         name: githubUser.name,
-        strategy: AuthStrategy.Github,
         avatarImageUrl: githubUser.avatar_url,
       }),
     );

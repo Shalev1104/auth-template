@@ -1,5 +1,4 @@
 import { TokenVerifyFailedException } from '@auth/domain/exceptions/token-verify-failed.exception';
-import { Uuid } from '@common/domain/uuid';
 import {
   Cookies,
   authCookieOptions,
@@ -12,7 +11,6 @@ import {
   AccessTokenOrRefreshToken,
   JWTDecodedToken,
 } from '@common/infrastructure/http/tokens';
-import { UserId } from '@common/infrastructure/http/user';
 import {
   Injectable,
   InternalServerErrorException,
@@ -20,6 +18,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { BearerTokenService } from './bearer-token.service';
+import { UserId } from '@auth/domain/User.aggregate';
 
 enum TokenExpirationInSeconds {
   Access = 20 * 60, // Every 20 minutes
@@ -45,11 +44,11 @@ export class AuthenticationService {
       };
 
       const accessToken = this.jwtService.sign(accessTokenPayload, {
-        secret: this.accessTokenSecret,
+        secret: this.tokenSecret,
         expiresIn: TokenExpirationInSeconds.Access,
       });
       const refreshToken = this.jwtService.sign(refreshTokenPayload, {
-        secret: this.refreshTokenSecret,
+        secret: this.tokenSecret,
         expiresIn: TokenExpirationInSeconds.Refresh,
       });
       return [accessToken, refreshToken];
@@ -114,13 +113,13 @@ export class AuthenticationService {
   async verifyAccessToken(
     accessToken: AccessToken,
   ): Promise<JWTDecodedToken<AccessToken>> {
-    return this.verifyToken(accessToken, this.accessTokenSecret);
+    return this.verifyToken(accessToken, this.tokenSecret);
   }
 
   async verifyRefreshToken(
     refreshToken: RefreshToken,
   ): Promise<JWTDecodedToken<RefreshToken>> {
-    return this.verifyToken(refreshToken, this.refreshTokenSecret);
+    return this.verifyToken(refreshToken, this.tokenSecret);
   }
 
   async isAuthenticated(request: Request) {
@@ -137,7 +136,7 @@ export class AuthenticationService {
     const { userId } = await this.verifyAccessToken(
       userAccessToken || machineAccessToken,
     );
-    return new Uuid(userId);
+    return userId;
   }
 
   private getAccessTokenFromAuthorizationHeader(request: Request) {
@@ -152,11 +151,7 @@ export class AuthenticationService {
     return request.signedCookies[Cookies.AccessToken];
   }
 
-  private get accessTokenSecret() {
-    return String(process.env.ACCESS_TOKEN_SECRET);
-  }
-
-  private get refreshTokenSecret() {
-    return String(process.env.ACCESS_TOKEN_SECRET);
+  private get tokenSecret() {
+    return String(process.env.TOKEN_SECRET);
   }
 }

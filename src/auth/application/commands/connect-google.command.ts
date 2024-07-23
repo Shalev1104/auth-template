@@ -11,7 +11,7 @@ import { GoogleUser } from '@auth/domain/strategies/google.strategy';
 import { User } from '@auth/domain/User.aggregate';
 import { EmailNotVerifiedException } from '@auth/domain/exceptions/email-not-verified.exception';
 import { MissingOAuthCode } from '@auth/domain/exceptions/missing-oauth-code.exception';
-import { AuthStrategy } from '@auth/domain/value-objects/AuthCredentials.vo';
+import { LoginProvider } from '@auth/domain/value-objects/LoginProvider';
 
 export class ConnectWithGoogleCommand implements ICommand {
   constructor(public readonly code: string) {}
@@ -21,24 +21,22 @@ export class ConnectWithGoogleCommand implements ICommand {
 export class ConnectWithGoogleCommandHandler implements ICommandHandler {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly userFactory: UserFactory<typeof AuthStrategy.Google>,
+    private readonly userFactory: UserFactory,
     private readonly eventPublisher: EventPublisher,
     private readonly googleService: GoogleService,
   ) {}
 
-  private async getOrRegisterUser(
-    googleUser: GoogleUser,
-  ): Promise<User<typeof AuthStrategy.Google>> {
-    const user: User<typeof AuthStrategy.Google> | undefined =
-      await this.userRepository.getUserById(googleUser.id.toString());
+  private async getOrRegisterUser(googleUser: GoogleUser): Promise<User> {
+    const user: User | undefined = await this.userRepository.getUserById(
+      googleUser.id.toString(),
+    );
 
     if (user) return user;
 
     return this.eventPublisher.mergeObjectContext(
-      await this.userFactory.create({
+      await this.userFactory.createUser(LoginProvider.Google, {
         emailAddress: googleUser.email,
         name: googleUser.name,
-        strategy: AuthStrategy.Google,
         avatarImageUrl: googleUser.picture,
       }),
     );

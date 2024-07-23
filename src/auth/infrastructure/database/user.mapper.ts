@@ -1,66 +1,111 @@
 import { Injectable } from '@nestjs/common';
-import { UserResponseDto } from '../http/dtos/user.dto';
 import { User } from '@auth/domain/User.aggregate';
+import { OAuthLogin } from '@auth/domain/entities/OAuthLogin.entity';
+import { Verification } from '@auth/domain/entities/Verification.entity';
+import { EmailAndPasswordLogin } from '@auth/domain/entities/EmailAndPasswordLogin.entity';
+import { TwoFactorAuthentication } from '@auth/domain/entities/TwoFactorAuthentication.entity';
 import {
   nullToUndefinedOrValue,
   undefinedToNullOrValue,
+  executeOrUndefined,
 } from '@common/infrastructure/http/casts';
 import { UserSchema } from '@common/infrastructure/database/typeorm/schemas/user.schema';
-import {
-  AuthCredentials,
-  AuthStrategy,
-} from '@auth/domain/value-objects/AuthCredentials.vo';
-import { Email } from '@auth/domain/value-objects/Email.vo';
-import { HashedPassword } from '@auth/domain/value-objects/HashedPassword.vo';
-import { UserProfile } from '@auth/domain/value-objects/UserProfile.vo';
-
-export interface UserEntity extends UserSchema {
-  localCredentials: {
-    password: string;
-  } | null;
-}
+import { UserResponseDto } from '../http/authentication/user.dto';
 
 @Injectable()
 export class UserMapper {
-  toDomain = (entity: UserSchema) => {
-    let credentials: AuthCredentials<AuthStrategy> = new AuthCredentials(
-      {} as any,
-    );
-
-    if (entity.emailAndPasswordLogin) {
-      credentials = new AuthCredentials({
-        authStrategy: AuthStrategy.Local,
-        email: new Email(entity.emailAndPasswordLogin.emailAddress),
-        hashedPassword: new HashedPassword(
-          entity.emailAndPasswordLogin.hashedPassword,
-        ),
-      });
-    }
-    return new User(
-      credentials,
-      new UserProfile({
-        name: entity.name,
-        avatarImageUrl: nullToUndefinedOrValue(entity.avatarImageUrl),
-      }),
-      entity.userId,
-    );
+  toDomain = (persistence: UserSchema) => {
+    return new User({
+      userId: persistence.userId,
+      createdAt: persistence.createdAt,
+      phone: nullToUndefinedOrValue(persistence.phone),
+      userProfile: {
+        name: persistence.name,
+        avatarImageUrl: nullToUndefinedOrValue(persistence.avatarImageUrl),
+      },
+      oAuthLogins: persistence.oAuthLogins.map(
+        (el) =>
+          new OAuthLogin({
+            ...el,
+            emailAddress: nullToUndefinedOrValue(el.emailAddress),
+          }),
+      ),
+      emailAndPasswordLogin: executeOrUndefined(
+        persistence.emailAndPasswordLogin,
+        (emailAndPasswordLogin) =>
+          new EmailAndPasswordLogin({
+            loginId: emailAndPasswordLogin.loginId,
+            emailAddress: emailAndPasswordLogin.emailAddress,
+            hashedPassword: emailAndPasswordLogin.hashedPassword,
+            sharedSecret: nullToUndefinedOrValue(
+              emailAndPasswordLogin.totpSharedSecret,
+            ),
+            verifications: emailAndPasswordLogin.verifications.map(
+              (verification) =>
+                new Verification({
+                  channelId: verification.channelId,
+                  verificationId: verification.verificationId,
+                }),
+            ),
+            twoFactorAuthentication: executeOrUndefined(
+              emailAndPasswordLogin.twoFactorAuthentication,
+              (twoFactorAuthentication) =>
+                new TwoFactorAuthentication({
+                  verificationId: twoFactorAuthentication.verificationId,
+                }),
+            ),
+          }),
+      ),
+    });
   };
 
-  toPersistence = (user: User): UserSchema => ({
-    userId: user.userId.toString(),
-    name: user.userProfile.name,
-    avatarImageUrl: undefinedToNullOrValue(user.userProfile.avatarImageUrl),
-    createdAt: new Date(),
-    lastLoginAt: user.lastLoginAt,
-    oAuthLogins: [],
-    phone: null,
-  });
+  toPersistence = (user: User): UserSchema =>
+    ({
+      userId: user.userId,
+      name: user.name,
+      createdAt: user.createdAt,
+      avatarImageUrl: undefinedToNullOrValue(user.avatarImageUrl),
+      phone: undefinedToNullOrValue(user.phone),
+      lastLoginAt: user.lastLoginAt,
+      emailAndPasswordLogin: executeOrUndefined(
+        user.emailAndPasswordLogin,
+        (e) => ({
+          userId: user.userId,
+          loginId: e.loginId,
+          emailAddress: e.emailAddress,
+          hashedPassword: e.hashedPassword,
+          totpSharedSecret: undefinedToNullOrValue(e.sharedSecret),
+          verifications: [...e.verifications].map((v) => ({
+            verificationId: v.verificationId,
+            userId: user.userId,
+            channelId: v.channelId,
+          })),
+          twoFactorAuthentication: undefinedToNullOrValue(
+            executeOrUndefined(
+              user.emailAndPasswordLogin?.twoFactorAuthentication,
+              (twoFactorAuthentication) => ({
+                userId: user.userId,
+                verificationId: twoFactorAuthentication.verificationId,
+              }),
+            ),
+          ),
+        }),
+      ),
+      oAuthLogins: [...user.oAuthLogin].map((oa) => ({
+        userId: user.userId,
+        providerId: oa.providerId,
+        providerName: oa.providerName,
+        emailAddress: undefinedToNullOrValue(oa.emailAddress),
+      })),
+    } as UserSchema);
 
   toResponseDTO = (user: User): UserResponseDto => ({
-    userId: user.userId.toString(),
-    emailAddress: user.email.toString(),
+    userId: user.userId,
+    name: user.name,
+    avatarImageUrl: user.avatarImageUrl,
+    phone: user.phone,
+    accounts: user.getLoginAccounts(),
     lastLoginAt: user.lastLoginAt,
-    strategy: user.authStrategy as any,
-    userProfile: user.userProfile,
+    createdAt: user.createdAt,
   });
 }

@@ -2,13 +2,13 @@ import {
   RepositoryGet,
   RepositorySave,
 } from '@common/infrastructure/database/entity.repository';
-import { User } from '../User.aggregate';
+import { User, UserWithEmailAndPasswordLogin } from '../User.aggregate';
 import { ProviderId } from '../entities/OAuthLogin.entity';
 import { OAuthProvider } from '@common/infrastructure/database/typeorm/enums/OAuthProvider.enum';
 
 export interface IUserRepository {
   getUserById: RepositoryGet<User>;
-  getUserByEmail: RepositoryGet<User>;
+  getUserByEmail: RepositoryGet<UserWithEmailAndPasswordLogin>;
 
   getUserByOAuthId: (
     providerId: ProviderId,

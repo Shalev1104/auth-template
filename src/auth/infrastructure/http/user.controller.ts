@@ -4,7 +4,7 @@ import { Authenticate } from '@common/infrastructure/http/decorators/authenticat
 import { Routers, RouterRoutes } from '@common/infrastructure/http/routers';
 import { Controller, Get, Req } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
-import { UserResponseDto } from './dtos/user.dto';
+import { UserResponseDto } from './authentication/user.dto';
 import { Request } from 'express';
 
 @Controller(Routers.Users)

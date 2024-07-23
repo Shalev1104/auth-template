@@ -3,7 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticationService } from './auth.service';
 import { catchError, lastValueFrom, map } from 'rxjs';
-import { AccessToken, GoogleTokensResponse } from '@common/infrastructure/http/tokens';
+import {
+  AccessToken,
+  GoogleTokensResponse,
+} from '@common/infrastructure/http/tokens';
 import { BearerTokenService } from './bearer-token.service';
 import { GoogleUser } from '@auth/domain/strategies/google.strategy';
 import { InvalidTokenException } from '@auth/domain/exceptions/invalid-token.exception';
