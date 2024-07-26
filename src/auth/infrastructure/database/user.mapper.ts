@@ -10,7 +10,7 @@ import {
   executeOrUndefined,
 } from '@common/infrastructure/http/casts';
 import { UserSchema } from '@common/infrastructure/database/typeorm/schemas/user.schema';
-import { UserResponseDto } from '../http/authentication/user.dto';
+import { UserResponseDto } from '../http/dtos/user.dto';
 
 @Injectable()
 export class UserMapper {

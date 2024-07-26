@@ -133,12 +133,6 @@ export class AuthenticationService {
     return this.verifyToken(refreshToken, this.tokenSecret);
   }
 
-  async isAuthenticated(request: Request) {
-    const decodedUserIdFromToken = await this.getAuthenticatedUser(request);
-    if (!decodedUserIdFromToken) return false;
-    return true;
-  }
-
   async getAuthenticatedUser(request: Request): Promise<MaybeClaims> {
     try {
       const userAccessToken = this.getAccessTokenFromCookie(request);

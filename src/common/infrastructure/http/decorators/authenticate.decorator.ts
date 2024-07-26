@@ -1,8 +1,14 @@
-import { UseGuards, applyDecorators } from '@nestjs/common';
-import { AuthenticationGuard } from '@auth/infrastructure/http/authentication/authenticate.guard';
+import {
+  ExecutionContext,
+  UseGuards,
+  applyDecorators,
+  createParamDecorator,
+} from '@nestjs/common';
+import { AuthGuard } from '@auth/infrastructure/http/guards/auth.guard';
 import { UserId } from '@auth/domain/User.aggregate';
 import { Name } from '@auth/domain/value-objects/UserProfile';
 import { LoginAccount } from '@auth/domain/value-objects/LoginProvider';
+import { CustomExpressRequest } from '../express/http-context';
 
 export type Claims = {
   iss: string;
@@ -17,5 +23,13 @@ export type Claims = {
 export type MaybeClaims = Claims | null;
 
 export function Authenticate() {
-  return applyDecorators(UseGuards(AuthenticationGuard));
+  return applyDecorators(UseGuards(AuthGuard));
 }
+
+/** Authenticated user as request param */
+export const Claims = createParamDecorator(
+  (_: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest<CustomExpressRequest>();
+    return request.user;
+  },
+);

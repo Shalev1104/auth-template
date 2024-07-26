@@ -20,7 +20,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { TokenInterceptor } from './authentication/token.interceptor';
+import { TokenInterceptor } from './interceptors/token.interceptor';
 import { LoginDto } from './dtos/login.dto';
 import { ConnectWithGithubCommand } from '@auth/application/commands/authorization/connect-github.command';
 import { ConnectWithGoogleCommand } from '@auth/application/commands/authorization/connect-google.command';
