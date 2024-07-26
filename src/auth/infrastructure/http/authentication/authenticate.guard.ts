@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { AuthenticationService } from '@auth/application/services/auth.service';
+import { AuthenticationService } from '@auth/application/services/authentication.service';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 
 @Injectable()

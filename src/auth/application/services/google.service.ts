@@ -1,25 +1,23 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthenticationService } from './auth.service';
+import { AuthenticationService } from './authentication.service';
 import { catchError, lastValueFrom, map } from 'rxjs';
-import {
-  AccessToken,
-  GoogleTokensResponse,
-} from '@common/infrastructure/http/tokens';
-import { BearerTokenService } from './bearer-token.service';
+import { GoogleTokensResponse } from '@common/infrastructure/http/tokens';
 import { GoogleUser } from '@auth/domain/strategies/google.strategy';
 import { InvalidTokenException } from '@auth/domain/exceptions/invalid-token.exception';
 import { InvalidOAuthCodeException } from '@auth/domain/exceptions/invalid-oauth-code.exception';
+import { ConfigService } from '@nestjs/config';
+import { AccessToken } from '@auth/domain/value-objects/Tokens';
 
 @Injectable()
 export class GoogleService extends AuthenticationService {
   constructor(
+    protected configService: ConfigService,
     protected jwtService: JwtService,
-    protected bearerTokenService: BearerTokenService,
     private httpService: HttpService,
   ) {
-    super(jwtService, bearerTokenService);
+    super(configService, jwtService);
   }
 
   async getGoogleTokensFromOAuthCode(
@@ -59,7 +57,7 @@ export class GoogleService extends AuthenticationService {
     const request = this.httpService
       .get<GoogleUser>(this.googleUserUrl(access_token), {
         headers: {
-          Authorization: this.bearerTokenService.fromTokenToBearer(id_token),
+          Authorization: this.createBearerToken(id_token),
         },
       })
       .pipe(map((response) => response.data))

@@ -1,12 +1,14 @@
-import { LoginCommand } from '@auth/application/commands/login.command';
-import { RefreshTokenCommand } from '@auth/application/commands/refresh-access-token.command';
-import { RegisterCommand } from '@auth/application/commands/register.command';
-import { AuthenticationService } from '@auth/application/services/auth.service';
+import { LoginCommand } from '@auth/application/commands/identification/login.command';
+import {
+  RefreshAccessTokenCommand,
+  RefreshAccessTokenCommandResult,
+} from '@auth/application/commands/authentication/refresh-access-token.command';
+import { RegisterCommand } from '@auth/application/commands/identification/register.command';
+import { AuthenticationService } from '@auth/application/services/authentication.service';
 import { Cookies } from '@common/infrastructure/http/cookies';
 import { Cookie } from '@common/infrastructure/http/decorators/cookie.decorator';
 import { Authenticate } from '@common/infrastructure/http/decorators/authenticate.decorator';
 import { Routers, RouterRoutes } from '@common/infrastructure/http/routers';
-import { RefreshToken } from '@common/infrastructure/http/tokens';
 import { Response } from 'express';
 import {
   Controller,
@@ -18,14 +20,15 @@ import {
   Query,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import {
-  TokenInterceptor,
-  AuthenticationTokens,
-} from './authentication/token.interceptor';
+import { TokenInterceptor } from './authentication/token.interceptor';
 import { LoginDto } from './dtos/login.dto';
-import { ConnectWithGithubCommand } from '@auth/application/commands/connect-github.command';
-import { ConnectWithGoogleCommand } from '@auth/application/commands/connect-google.command';
+import { ConnectWithGithubCommand } from '@auth/application/commands/authorization/connect-github.command';
+import { ConnectWithGoogleCommand } from '@auth/application/commands/authorization/connect-google.command';
 import { RegisterDto } from './dtos/register.dto';
+import {
+  AuthenticationTokens,
+  RefreshToken,
+} from '@auth/domain/value-objects/Tokens';
 
 @Controller(Routers.Auth)
 export class AuthController {
@@ -76,12 +79,13 @@ export class AuthController {
   @Post(RouterRoutes.Auth.RefreshToken)
   @UseInterceptors(TokenInterceptor)
   async refreshToken(
-    @Res({ passthrough: true }) response: Response,
     @Cookie(Cookies.RefreshToken) refreshToken: RefreshToken,
+    @Res({ passthrough: true }) response: Response,
   ) {
-    const command = new RefreshTokenCommand(refreshToken);
     return await this.commandBus
-      .execute<RefreshTokenCommand, AuthenticationTokens>(command)
+      .execute<RefreshAccessTokenCommand, RefreshAccessTokenCommandResult>(
+        new RefreshAccessTokenCommand(refreshToken),
+      )
       .then((tokens) => ({
         tokens,
         response: 'Refreshed Access token',

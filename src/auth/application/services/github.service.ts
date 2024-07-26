@@ -1,25 +1,23 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthenticationService } from './auth.service';
+import { AuthenticationService } from './authentication.service';
 import { catchError, lastValueFrom, map } from 'rxjs';
 import { InvalidTokenException } from '@auth/domain/exceptions/invalid-token.exception';
-import {
-  AccessToken,
-  GithubCodeToAccessTokenResponse,
-} from '@common/infrastructure/http/tokens';
-import { BearerTokenService } from './bearer-token.service';
+import { GithubCodeToAccessTokenResponse } from '@common/infrastructure/http/tokens';
 import { GithubUser } from '@auth/domain/strategies/github.strategy';
 import { InvalidOAuthCodeException } from '@auth/domain/exceptions/invalid-oauth-code.exception';
+import { ConfigService } from '@nestjs/config';
+import { AccessToken } from '@auth/domain/value-objects/Tokens';
 
 @Injectable()
 export class GithubService extends AuthenticationService {
   constructor(
+    protected configService: ConfigService,
     protected jwtService: JwtService,
-    protected bearerTokenService: BearerTokenService,
     private httpService: HttpService,
   ) {
-    super(jwtService, bearerTokenService);
+    super(configService, jwtService);
   }
 
   async getGithubAccessToken(code: string): Promise<AccessToken> {
@@ -52,7 +50,7 @@ export class GithubService extends AuthenticationService {
     const request = this.httpService
       .get<GithubUser>(this.githubUserUrl, {
         headers: {
-          Authorization: this.bearerTokenService.fromTokenToBearer(accessToken),
+          Authorization: this.createBearerToken(accessToken),
         },
       })
       .pipe(map((response) => response.data))

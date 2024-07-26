@@ -1,5 +1,4 @@
-import { AuthenticationService } from '@auth/application/services/auth.service';
-import { AccessToken, RefreshToken } from '@common/infrastructure/http/tokens';
+import { AuthenticationService } from '@auth/application/services/authentication.service';
 import {
   Injectable,
   NestInterceptor,
@@ -8,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
 import type { Response } from 'express';
+import { AuthenticationTokens } from '@auth/domain/value-objects/Tokens';
 
-export type AuthenticationTokens = [AccessToken, RefreshToken];
 interface ResponseBody {
   tokens: AuthenticationTokens;
   response: string;

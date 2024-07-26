@@ -11,6 +11,7 @@ import { LoginAccount, LoginProvider } from './value-objects/LoginProvider';
 import { EmailAddress } from './value-objects/EmailAddress';
 import { z } from 'zod';
 import { ProviderNotExistException } from './exceptions/provider-not-exist.exception';
+import { UserNotFoundException } from './exceptions/user-not-found.exception';
 
 export const UserId = Uuid;
 export type UserId = z.infer<typeof UserId>;
@@ -52,6 +53,14 @@ export class User extends AggregateRoot {
     this._oAuthLogin = new EntityCollection(user.oAuthLogins);
     this._createdAt = user.createdAt || new Date();
     this._lastLoginAt = user.lastLoginAt || new Date();
+  }
+
+  static getOrFail(
+    user?: User,
+    exception: Error = new UserNotFoundException(),
+  ) {
+    if (!user) throw exception;
+    return user;
   }
 
   updateLastLogin() {
