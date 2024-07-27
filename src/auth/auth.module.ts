@@ -28,6 +28,7 @@ import { AddedSocialLoginEventHandler } from './application/events/added-social-
 import { AttemptedLoginEventHandler } from './application/events/attempted-login.event';
 import { GoogleService } from './infrastructure/oauth/google/google.service';
 import { GithubService } from './infrastructure/oauth/github/github.service';
+import { FacebookService } from './infrastructure/oauth/facebook/facebook.service';
 import { OAuthController } from './infrastructure/http/controllers/oauth/oauth.controller';
 import { UnlinkOAuthCommandHandler } from './application/commands/authorization/unlink-oauth.command';
 import { RemovedSocialLoginEventHandler } from './application/events/removed-social-login.event';
@@ -53,6 +54,7 @@ const services = [
   EncryptionService,
   GoogleService,
   GithubService,
+  FacebookService,
   AuthMailService,
 ];
 const repositories = [UserRepository];

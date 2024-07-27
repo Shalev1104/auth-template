@@ -27,6 +27,7 @@ import { OAuthProvider } from '@common/infrastructure/database/typeorm/enums/OAu
 import { ProviderNotExistException } from '@auth/domain/exceptions/OAuth/provider-not-exist.exception';
 import { GoogleService } from '../../../oauth/google/google.service';
 import { GithubService } from '../../../oauth/github/github.service';
+import { FacebookService } from '../../../oauth/facebook/facebook.service';
 import { UnlinkOAuthCommand } from '@auth/application/commands/authorization/unlink-oauth.command';
 
 @Controller('auth/oauth')
@@ -37,9 +38,11 @@ export class OAuthController {
     private readonly commandBus: CommandBus,
     private readonly githubService: GithubService,
     private readonly googleService: GoogleService,
+    private readonly facebookService: FacebookService,
   ) {
     this.services.set(OAuthProvider.Google, this.googleService);
     this.services.set(OAuthProvider.Github, this.githubService);
+    this.services.set(OAuthProvider.Facebook, this.facebookService);
   }
 
   @Get('login/:provider')

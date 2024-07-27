@@ -1,6 +1,7 @@
 import {
   GithubLogin,
   GoogleLogin,
+  FacebookLogin,
 } from '@auth/domain/entities/OAuthLogin.entity';
 import { Injectable } from '@nestjs/common';
 import { validateSchema } from '@common/domain/entity-validate';
@@ -14,6 +15,7 @@ import { UserCreatedEvent } from '@auth/domain/events/user-created.event';
 import { UserAlreadyExistException } from '@auth/domain/exceptions/user-already-exist.exception';
 import { IGoogleAuthorization } from '@auth/infrastructure/oauth/google/google.authorization';
 import { IGithubAuthorization } from '@auth/infrastructure/oauth/github/github.authorization';
+import { IFacebookAuthorization } from '@auth/infrastructure/oauth/facebook/facebook.authorization';
 import { RegisterDto } from '@auth/infrastructure/http/controllers/auth/auth.dto';
 import { ProviderNotExistException } from '@auth/domain/exceptions/oauth/provider-not-exist.exception';
 
@@ -53,6 +55,11 @@ export class UserFactory {
         return this.userRepository.getUserByGithubId(
           (<IGithubAuthorization>data).id.toString(),
         );
+
+      case LoginProvider.Facebook:
+        return this.userRepository.getUserByFacebookId(
+          (<IFacebookAuthorization>data).id,
+        );
     }
   }
 
@@ -67,6 +74,8 @@ export class UserFactory {
         return this.constructGoogleUser(<IGoogleAuthorization>data);
       case LoginProvider.Github:
         return this.constructGithubUser(<IGithubAuthorization>data);
+      case LoginProvider.Facebook:
+        return this.constructFacebookUser(<IFacebookAuthorization>data);
       default:
         throw new ProviderNotExistException();
     }
@@ -126,6 +135,25 @@ export class UserFactory {
       userProfile: {
         name: authorization.name,
         avatarImageUrl: authorization.avatar_url,
+      },
+      phone: undefined,
+    });
+  }
+
+  private async constructFacebookUser(
+    authorization: IFacebookAuthorization,
+  ): Promise<User> {
+    return new User({
+      oAuthLogins: [
+        new FacebookLogin(
+          authorization.id,
+          authorization.email,
+          authorization.picture.data.url,
+        ),
+      ],
+      userProfile: {
+        name: authorization.name,
+        avatarImageUrl: authorization.picture.data.url,
       },
       phone: undefined,
     });
