@@ -29,6 +29,8 @@ import { AttemptedLoginEventHandler } from './application/events/attempted-login
 import { GoogleService } from './infrastructure/oauth/google/google.service';
 import { GithubService } from './infrastructure/oauth/github/github.service';
 import { OAuthController } from './infrastructure/http/controllers/oauth/oauth.controller';
+import { UnlinkOAuthCommandHandler } from './application/commands/authorization/unlink-oauth.command';
+import { RemovedSocialLoginEventHandler } from './application/events/removed-social-login.event';
 
 const commands = [
   LoginCommandHandler,
@@ -36,12 +38,14 @@ const commands = [
   RefreshAccessTokenCommandHandler,
 
   ConnectWithOAuthCommandHandler,
+  UnlinkOAuthCommandHandler,
 ];
 const queries = [GetAuthenticatedUserQueryHandler];
 const events = [
   UserCreatedEventHandler,
   AttemptedLoginEventHandler,
   AddedSocialLoginEventHandler,
+  RemovedSocialLoginEventHandler,
 ];
 const services = [
   JwtService,

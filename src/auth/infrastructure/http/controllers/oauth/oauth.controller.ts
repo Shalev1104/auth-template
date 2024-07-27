@@ -9,9 +9,11 @@ import {
   Req,
   Redirect,
   UseFilters,
+  Delete,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import {
+  Authenticate,
   Claims,
   MaybeClaims,
 } from '@common/infrastructure/http/decorators/authenticate.decorator';
@@ -25,6 +27,7 @@ import { OAuthProvider } from '@common/infrastructure/database/typeorm/enums/OAu
 import { ProviderNotExistException } from '@auth/domain/exceptions/OAuth/provider-not-exist.exception';
 import { GoogleService } from '../../../oauth/google/google.service';
 import { GithubService } from '../../../oauth/github/github.service';
+import { UnlinkOAuthCommand } from '@auth/application/commands/authorization/unlink-oauth.command';
 
 @Controller('auth/oauth')
 export class OAuthController {
@@ -80,5 +83,18 @@ export class OAuthController {
 
     response.clearCookie(state);
     return { url: request.signedCookies[state] };
+  }
+
+  @Delete('unlink/:provider')
+  @Authenticate()
+  async unlinkOAuth(
+    @OAuthProviderParam() provider: OAuthProvider,
+    @Claims() { sub }: Claims,
+  ) {
+    const service = this.services.get(provider);
+    if (!service) throw new ProviderNotExistException();
+
+    await this.commandBus.execute(new UnlinkOAuthCommand(sub, service));
+    return `Successfully unlinked ${service.provider} from your account`;
   }
 }
