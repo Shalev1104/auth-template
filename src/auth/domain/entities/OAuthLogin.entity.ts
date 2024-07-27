@@ -4,6 +4,7 @@ import { ILoginable } from '../User.aggregate';
 import { Uuid } from '@common/domain/value-objects/Uuid';
 import { OAuthProvider } from '@common/infrastructure/database/typeorm/enums/OAuthProvider.enum';
 import { z } from 'zod';
+import { AvatarImageUrl } from '../value-objects/UserProfile';
 
 export const ProviderId = Uuid;
 export type ProviderId = z.infer<typeof ProviderId>;
@@ -11,7 +12,10 @@ export type ProviderId = z.infer<typeof ProviderId>;
 interface IOAuthLogin {
   providerName: OAuthProvider;
   providerId: ProviderId;
-  emailAddress?: EmailAddress;
+  data?: {
+    emailAddress?: EmailAddress;
+    avatarImageUrl?: EmailAddress;
+  };
 }
 
 export class OAuthLogin
@@ -20,11 +24,13 @@ export class OAuthLogin
 {
   protected readonly _providerId: ProviderId;
   protected readonly _emailAddress?: EmailAddress;
+  protected readonly _avatarImageUrl?: AvatarImageUrl;
 
   constructor(externalLogin: IOAuthLogin) {
     super(externalLogin.providerName);
-    this._emailAddress = externalLogin.emailAddress;
     this._providerId = externalLogin.providerId;
+    this._emailAddress = externalLogin.data?.emailAddress;
+    this._avatarImageUrl = externalLogin.data?.avatarImageUrl;
   }
 
   get providerId() {
@@ -37,34 +43,58 @@ export class OAuthLogin
   get emailAddress() {
     return this._emailAddress;
   }
+  get avatarImageUrl() {
+    return this._avatarImageUrl;
+  }
 }
 
 export class GoogleLogin extends OAuthLogin {
-  constructor(providerId: ProviderId, emailAddress: EmailAddress) {
+  constructor(
+    providerId: ProviderId,
+    emailAddress: EmailAddress,
+    avatarImageUrl: AvatarImageUrl,
+  ) {
     super({
       providerId,
-      emailAddress,
       providerName: OAuthProvider.Google,
+      data: {
+        emailAddress,
+        avatarImageUrl,
+      },
     });
   }
 }
 
 export class GithubLogin extends OAuthLogin {
-  constructor(providerId: ProviderId, emailAddress: EmailAddress) {
+  constructor(
+    providerId: ProviderId,
+    emailAddress: EmailAddress,
+    avatarImageUrl: AvatarImageUrl,
+  ) {
     super({
       providerId,
-      emailAddress,
       providerName: OAuthProvider.Github,
+      data: {
+        emailAddress,
+        avatarImageUrl,
+      },
     });
   }
 }
 
 export class FacebookLogin extends OAuthLogin {
-  constructor(providerId: ProviderId, emailAddress: EmailAddress) {
+  constructor(
+    providerId: ProviderId,
+    emailAddress: EmailAddress,
+    avatarImageUrl: AvatarImageUrl,
+  ) {
     super({
       providerId,
-      emailAddress,
       providerName: OAuthProvider.Facebook,
+      data: {
+        emailAddress,
+        avatarImageUrl,
+      },
     });
   }
 }

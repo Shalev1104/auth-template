@@ -1,7 +1,7 @@
 import { UserId } from '@auth/domain/User.aggregate';
 import { UserNotFoundException } from '@auth/domain/exceptions/user-not-found.exception';
 import { UserMapper } from '@auth/infrastructure/database/user.mapper';
-import { UserResponseDto } from '@auth/infrastructure/http/dtos/user.dto';
+import { UserResponseDto } from '@auth/infrastructure/http/controllers/auth/auth.dto';
 import { UserSchema } from '@common/infrastructure/database/typeorm/schemas/user.schema';
 import { IQuery, QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { DataSource } from 'typeorm';

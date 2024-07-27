@@ -5,36 +5,44 @@ import { LoginCommandHandler } from './application/commands/identification/login
 import { RefreshAccessTokenCommandHandler } from './application/commands/authentication/refresh-access-token.command';
 import { RegisterCommandHandler } from './application/commands/identification/register.command';
 import { UserFactory } from './application/factories/user.factory';
-import { GetAuthenticatedUserQueryHandler } from './application/queries/get-user-claims.query';
+import { GetAuthenticatedUserQueryHandler } from './application/queries/get-authenticated-user.query';
 import { AuthenticationService } from './application/services/authentication.service';
 import { EncryptionService } from './application/services/encryption.service';
 import { UserRepository } from './infrastructure/database/user.db-repository';
 import { UserMapper } from './infrastructure/database/user.mapper';
-import { AuthController } from './infrastructure/http/auth.controller';
-import { ConnectWithGithubCommandHandler } from './application/commands/connect-github.command';
-import { GithubService } from './application/services/github.service';
+import { AuthController } from './infrastructure/http/controllers/auth/auth.controller';
 import { HttpModule } from '@nestjs/axios';
 import { DatabaseModule } from '@common/infrastructure/database/database.module';
-import { UserCreatedEventHandler } from './application/events/user-created.event';
-import { GoogleService } from './application/services/google.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserSchema } from '@common/infrastructure/database/typeorm/schemas/user.schema';
 import { OAuthLoginSchema } from '@common/infrastructure/database/typeorm/schemas/oAuthLogin.schema';
+import { UserCreatedEventHandler } from './application/events/user-created.event';
 import { VerificationSchema } from '@common/infrastructure/database/typeorm/schemas/verifications.schema';
 import { TwoFactorAuthenticationSchema } from '@common/infrastructure/database/typeorm/schemas/twoFactorAuthentication.schema';
 import { OtpChannelSchema } from '@common/infrastructure/database/typeorm/schemas/otpChannel.schema';
 import { CommunicationsModule } from '@common/infrastructure/communications/communications.module';
 import { AuthMailService } from './infrastructure/mail/auth-mail.service';
 import { ConfigModule } from '@nestjs/config';
+import { ConnectWithOAuthCommandHandler } from './application/commands/authorization/connect-oauth.command';
+import { AddedSocialLoginEventHandler } from './application/events/added-social-login.event';
+import { AttemptedLoginEventHandler } from './application/events/attempted-login.event';
+import { GoogleService } from './infrastructure/oauth/google/google.service';
+import { GithubService } from './infrastructure/oauth/github/github.service';
+import { OAuthController } from './infrastructure/http/controllers/oauth/oauth.controller';
 
 const commands = [
   LoginCommandHandler,
   RegisterCommandHandler,
   RefreshAccessTokenCommandHandler,
-  ConnectWithGithubCommandHandler,
+
+  ConnectWithOAuthCommandHandler,
 ];
 const queries = [GetAuthenticatedUserQueryHandler];
-const events = [UserCreatedEventHandler];
+const events = [
+  UserCreatedEventHandler,
+  AttemptedLoginEventHandler,
+  AddedSocialLoginEventHandler,
+];
 const services = [
   JwtService,
   AuthenticationService,
@@ -62,7 +70,7 @@ const factories = [UserFactory];
       OtpChannelSchema,
     ]),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, OAuthController],
   providers: [
     ...commands,
     ...queries,

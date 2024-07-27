@@ -1,4 +1,4 @@
-import { IUserRepository } from '@auth/domain/ports/User.repository';
+import { IUserRepository } from '@auth/domain/ports/user.repository';
 import { Injectable } from '@nestjs/common';
 import { UserMapper } from './user.mapper';
 import { InjectRepository } from '@nestjs/typeorm';

@@ -1,4 +1,4 @@
-import { TokenVerifyFailedException } from '@auth/domain/exceptions/token-verify-failed.exception';
+import { TokenVerifyFailedException } from '@auth/domain/exceptions/tokens/token-verify-failed.exception';
 import {
   Cookies,
   authCookieOptions,

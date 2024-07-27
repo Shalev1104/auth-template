@@ -1,14 +1,14 @@
 import { AuthenticationService } from '@auth/application/services/authentication.service';
 import { EncryptionService } from '@auth/application/services/encryption.service';
 import { AttemptedLoginEvent } from '@auth/domain/events/attempted-login';
-import { IncorrectEmailOrPasswordException } from '@auth/domain/exceptions/incorrect-email-or-password.exception';
+import { IncorrectEmailOrPasswordException } from '@auth/domain/exceptions/email-and-password/incorrect-email-or-password.exception';
 import {
   User,
   UserWithEmailAndPasswordLogin,
 } from '@auth/domain/User.aggregate';
 import { AuthenticationTokens } from '@auth/domain/value-objects/Tokens';
 import { UserRepository } from '@auth/infrastructure/database/user.db-repository';
-import { LoginDto } from '@auth/infrastructure/http/dtos/login.dto';
+import { LoginDto } from '@auth/infrastructure/http/controllers/auth/auth.dto';
 import {
   ICommand,
   CommandHandler,

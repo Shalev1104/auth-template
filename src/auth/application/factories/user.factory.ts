@@ -5,7 +5,6 @@ import {
 import { Injectable } from '@nestjs/common';
 import { validateSchema } from '@common/domain/entity-validate';
 import { UserRepository } from '@auth/infrastructure/database/user.db-repository';
-import { ProviderNotExistException } from '@auth/domain/exceptions/provider-not-exist.exception';
 import { EncryptionService } from '../services/encryption.service';
 import { PlainPassword } from '@auth/domain/value-objects/Password';
 import { User } from '@auth/domain/User.aggregate';
@@ -13,9 +12,10 @@ import { EmailAndPasswordLogin } from '@auth/domain/entities/EmailAndPasswordLog
 import { LoginProvider } from '@auth/domain/value-objects/LoginProvider';
 import { UserCreatedEvent } from '@auth/domain/events/user-created.event';
 import { UserAlreadyExistException } from '@auth/domain/exceptions/user-already-exist.exception';
-import { GoogleUser } from '@auth/domain/strategies/google.strategy';
-import { GithubUser } from '@auth/domain/strategies/github.strategy';
-import { RegisterDto } from '@auth/infrastructure/http/dtos/register.dto';
+import { IGoogleAuthorization } from '@auth/infrastructure/oauth/google/google.authorization';
+import { IGithubAuthorization } from '@auth/infrastructure/oauth/github/github.authorization';
+import { RegisterDto } from '@auth/infrastructure/http/controllers/auth/auth.dto';
+import { ProviderNotExistException } from '@auth/domain/exceptions/oauth/provider-not-exist.exception';
 
 @Injectable()
 export class UserFactory {
@@ -45,11 +45,13 @@ export class UserFactory {
         );
 
       case LoginProvider.Google:
-        return this.userRepository.getUserByGoogleId((<GoogleUser>data).id);
+        return this.userRepository.getUserByGoogleId(
+          (<IGoogleAuthorization>data).id,
+        );
 
       case LoginProvider.Github:
         return this.userRepository.getUserByGithubId(
-          (<GithubUser>data).id.toString(),
+          (<IGithubAuthorization>data).id.toString(),
         );
     }
   }
@@ -62,9 +64,9 @@ export class UserFactory {
       case LoginProvider.EmailAndPassword:
         return this.constructEmailAndPasswordUser(<RegisterDto>data);
       case LoginProvider.Google:
-        return this.constructGoogleUser(<GoogleUser>data);
+        return this.constructGoogleUser(<IGoogleAuthorization>data);
       case LoginProvider.Github:
-        return this.constructGithubUser(<GithubUser>data);
+        return this.constructGithubUser(<IGithubAuthorization>data);
       default:
         throw new ProviderNotExistException();
     }
@@ -91,23 +93,39 @@ export class UserFactory {
     });
   }
 
-  private async constructGoogleUser(user: GoogleUser): Promise<User> {
+  private async constructGoogleUser(
+    authorization: IGoogleAuthorization,
+  ): Promise<User> {
     return new User({
-      oAuthLogins: [new GoogleLogin(user.id, user.email)],
+      oAuthLogins: [
+        new GoogleLogin(
+          authorization.id,
+          authorization.email,
+          authorization.picture,
+        ),
+      ],
       userProfile: {
-        name: user.name,
-        avatarImageUrl: user.picture,
+        name: authorization.name,
+        avatarImageUrl: authorization.picture,
       },
       phone: undefined,
     });
   }
 
-  private async constructGithubUser(user: GithubUser): Promise<User> {
+  private async constructGithubUser(
+    authorization: IGithubAuthorization,
+  ): Promise<User> {
     return new User({
-      oAuthLogins: [new GithubLogin(user.id.toString(), user.email)],
+      oAuthLogins: [
+        new GithubLogin(
+          authorization.id.toString(),
+          authorization.email,
+          authorization.avatar_url,
+        ),
+      ],
       userProfile: {
-        name: user.name,
-        avatarImageUrl: user.avatar_url,
+        name: authorization.name,
+        avatarImageUrl: authorization.avatar_url,
       },
       phone: undefined,
     });

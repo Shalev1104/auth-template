@@ -1,5 +1,5 @@
 import { AuthenticationService } from '@auth/application/services/authentication.service';
-import { MissingRefreshTokenException } from '@auth/domain/exceptions/missing-refresh-token.exception';
+import { MissingRefreshTokenException } from '@auth/domain/exceptions/tokens/missing-refresh-token.exception';
 import { User } from '@auth/domain/User.aggregate';
 import {
   AuthenticationTokens,

@@ -29,6 +29,9 @@ export class OAuthLoginSchema {
   @Column({ type: 'varchar', length: 255, name: 'email', nullable: true })
   emailAddress: string | null;
 
+  @Column({ type: 'varchar', name: 'avatar_url', nullable: true })
+  avatarImageUrl: string | null;
+
   @ManyToOne(() => UserSchema, (user) => user.oAuthLogins, {
     orphanedRowAction: 'delete',
   })

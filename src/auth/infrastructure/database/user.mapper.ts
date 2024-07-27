@@ -10,7 +10,7 @@ import {
   executeOrUndefined,
 } from '@common/infrastructure/http/casts';
 import { UserSchema } from '@common/infrastructure/database/typeorm/schemas/user.schema';
-import { UserResponseDto } from '../http/dtos/user.dto';
+import { UserResponseDto } from '../http/controllers/auth/auth.dto';
 
 @Injectable()
 export class UserMapper {
@@ -27,7 +27,10 @@ export class UserMapper {
         (el) =>
           new OAuthLogin({
             ...el,
-            emailAddress: nullToUndefinedOrValue(el.emailAddress),
+            data: {
+              avatarImageUrl: nullToUndefinedOrValue(el.avatarImageUrl),
+              emailAddress: nullToUndefinedOrValue(el.emailAddress),
+            },
           }),
       ),
       emailAndPasswordLogin: executeOrUndefined(

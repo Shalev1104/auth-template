@@ -10,7 +10,7 @@ import { Phone } from './value-objects/Phone';
 import { LoginAccount, LoginProvider } from './value-objects/LoginProvider';
 import { EmailAddress } from './value-objects/EmailAddress';
 import { z } from 'zod';
-import { ProviderNotExistException } from './exceptions/provider-not-exist.exception';
+import { ProviderNotExistException } from './exceptions/oauth/provider-not-exist.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 
 export const UserId = Uuid;

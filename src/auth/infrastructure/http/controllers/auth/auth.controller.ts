@@ -25,24 +25,16 @@ import {
   UseInterceptors,
   Body,
   Res,
-  Query,
   Ip,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { SetCookieTokensInterceptor } from './interceptors/set-cookie-token.interceptor';
-import { LoginDto } from './dtos/login.dto';
-import { ConnectWithGithubCommand } from '@auth/application/commands/connect-github.command';
-import { ConnectWithGoogleCommand } from '@auth/application/commands/connect-google.command';
-import { RegisterDto } from './dtos/register.dto';
-import {
-  AuthenticationTokens,
-  RefreshToken,
-} from '@auth/domain/value-objects/Tokens';
+import { SetCookieTokensInterceptor } from '../../interceptors/set-cookie-token.interceptor';
+import { RegisterDto, LoginDto, UserResponseDto } from './auth.dto';
+import { RefreshToken } from '@auth/domain/value-objects/Tokens';
 import { CustomExpressResponse } from '@common/infrastructure/http/express/http-context';
-import { UserMapper } from '../database/user.mapper';
+import { UserMapper } from '../../../database/user.mapper';
 import { ZodValidationPipe } from '@common/infrastructure/http/pipes/zod-validation.pipe';
-import { UserResponseDto } from './dtos/user.dto';
-import { GetAuthenticatedUserQuery } from '@auth/application/queries/get-user-claims.query';
+import { GetAuthenticatedUserQuery } from '@auth/application/queries/get-authenticated-user.query';
 
 @Controller('auth')
 export class AuthController {
@@ -121,31 +113,5 @@ export class AuthController {
       this.authenticationService.clearAuthenticationTokens(response);
       throw e;
     }
-  }
-
-  @Get('github')
-  @UseInterceptors(SetCookieTokensInterceptor)
-  async githubCallback(
-    @Query('code') code: string,
-    @Res({ passthrough: true }) response: CustomExpressResponse,
-  ) {
-    response.authenticationTokens = await this.commandBus.execute<
-      ConnectWithGithubCommand,
-      AuthenticationTokens
-    >(new ConnectWithGithubCommand(code));
-    return 'Connected with github';
-  }
-
-  @Get('google')
-  @UseInterceptors(SetCookieTokensInterceptor)
-  async googleCallback(
-    @Query('code') code: string,
-    @Res({ passthrough: true }) response: CustomExpressResponse,
-  ) {
-    response.authenticationTokens = await this.commandBus.execute<
-      ConnectWithGoogleCommand,
-      AuthenticationTokens
-    >(new ConnectWithGoogleCommand(code));
-    return 'Connected with google';
   }
 }

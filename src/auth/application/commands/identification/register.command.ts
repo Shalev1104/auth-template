@@ -6,7 +6,7 @@ import {
 } from '@nestjs/cqrs';
 import { UserFactory } from '../../factories/user.factory';
 import { AuthenticationService } from '../../services/authentication.service';
-import { RegisterDto } from '@auth/infrastructure/http/dtos/register.dto';
+import { RegisterDto } from '@auth/infrastructure/http/controllers/auth/auth.dto';
 import { LoginProvider } from '@auth/domain/value-objects/LoginProvider';
 import { AuthenticationTokens } from '@auth/domain/value-objects/Tokens';
 import { User } from '@auth/domain/User.aggregate';
