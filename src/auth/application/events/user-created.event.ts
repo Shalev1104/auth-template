@@ -1,14 +1,17 @@
 import { UserCreatedEvent } from '@auth/domain/events/user-created.event';
-import { Logger } from '@nestjs/common';
+import { AuthMailService } from '@auth/infrastructure/mail/auth-mail.service';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 
 @EventsHandler(UserCreatedEvent)
 export class UserCreatedEventHandler
   implements IEventHandler<UserCreatedEvent>
 {
-  private readonly logger = new Logger(UserCreatedEventHandler.name);
+  constructor(private readonly authMailService: AuthMailService) {}
 
-  async handle({ userId }: UserCreatedEvent): Promise<void> {
-    this.logger.log('New User Created:', userId);
+  async handle({ user, registeredWith }: UserCreatedEvent): Promise<void> {
+    const registerationEmail = user.getLoginAccountEmail(registeredWith);
+    if (!registerationEmail) return;
+
+    return this.authMailService.sendWelcomeMail(registerationEmail, user.name);
   }
 }

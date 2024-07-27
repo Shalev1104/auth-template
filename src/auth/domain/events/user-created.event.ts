@@ -1,5 +1,9 @@
-import { UserId } from '../User.aggregate';
+import { User } from '../User.aggregate';
+import { LoginProvider } from '../value-objects/LoginProvider';
 
 export class UserCreatedEvent {
-  constructor(public readonly userId: UserId) {}
+  constructor(
+    public readonly user: User,
+    public readonly registeredWith: LoginProvider,
+  ) {}
 }

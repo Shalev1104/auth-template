@@ -53,7 +53,7 @@ export class ConnectWithGithubCommandHandler implements ICommandHandler {
     const user = await this.getOrRegisterUser(githubUser);
 
     const autheticationTokens =
-      await this.githubService.createAuthenticationTokens(user.userId);
+      await this.githubService.createAuthenticationTokens(user);
 
     user.commit();
 

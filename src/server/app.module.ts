@@ -4,6 +4,7 @@ import { envSchemaValidation } from '@server/env-schema.validator';
 import { DatabaseModule } from '@common/infrastructure/database/database.module';
 import { AuthModule } from '@auth/auth.module';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { CommunicationsModule } from '@common/infrastructure/communications/communications.module';
 import { UserMiddleware } from '@common/infrastructure/http/middlewares/user.middleware';
 
 @Module({
@@ -13,6 +14,7 @@ import { UserMiddleware } from '@common/infrastructure/http/middlewares/user.mid
     }),
     CqrsModule,
     DatabaseModule,
+    CommunicationsModule,
     AuthModule,
   ],
 })

@@ -55,7 +55,7 @@ export class ConnectWithGoogleCommandHandler implements ICommandHandler {
     const user = await this.getOrRegisterUser(googleUser);
 
     const autheticationTokens =
-      await this.googleService.createAuthenticationTokens(user.userId);
+      await this.googleService.createAuthenticationTokens(user);
 
     user.commit();
 

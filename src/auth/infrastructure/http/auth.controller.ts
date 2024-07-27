@@ -1,14 +1,22 @@
-import { LoginCommand } from '@auth/application/commands/identification/login.command';
+import {
+  LoginCommand,
+  LoginCommandResult,
+} from '@auth/application/commands/identification/login.command';
 import {
   RefreshAccessTokenCommand,
   RefreshAccessTokenCommandResult,
 } from '@auth/application/commands/authentication/refresh-access-token.command';
-import { RegisterCommand } from '@auth/application/commands/identification/register.command';
+import {
+  RegisterCommand,
+  RegisterCommandResult,
+} from '@auth/application/commands/identification/register.command';
 import { AuthenticationService } from '@auth/application/services/authentication.service';
 import { Cookies } from '@common/infrastructure/http/cookies';
 import { Cookie } from '@common/infrastructure/http/decorators/cookie.decorator';
-import { Authenticate } from '@common/infrastructure/http/decorators/authenticate.decorator';
-import { Routers, RouterRoutes } from '@common/infrastructure/http/routers';
+import {
+  Authenticate,
+  Claims,
+} from '@common/infrastructure/http/decorators/authenticate.decorator';
 import { Response } from 'express';
 import {
   Controller,
@@ -18,23 +26,31 @@ import {
   Body,
   Res,
   Query,
+  Ip,
 } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
-import { TokenInterceptor } from './interceptors/token.interceptor';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { SetCookieTokensInterceptor } from './interceptors/set-cookie-token.interceptor';
 import { LoginDto } from './dtos/login.dto';
-import { ConnectWithGithubCommand } from '@auth/application/commands/authorization/connect-github.command';
-import { ConnectWithGoogleCommand } from '@auth/application/commands/authorization/connect-google.command';
+import { ConnectWithGithubCommand } from '@auth/application/commands/connect-github.command';
+import { ConnectWithGoogleCommand } from '@auth/application/commands/connect-google.command';
 import { RegisterDto } from './dtos/register.dto';
 import {
   AuthenticationTokens,
   RefreshToken,
 } from '@auth/domain/value-objects/Tokens';
+import { CustomExpressResponse } from '@common/infrastructure/http/express/http-context';
+import { UserMapper } from '../database/user.mapper';
+import { ZodValidationPipe } from '@common/infrastructure/http/pipes/zod-validation.pipe';
+import { UserResponseDto } from './dtos/user.dto';
+import { GetAuthenticatedUserQuery } from '@auth/application/queries/get-user-claims.query';
 
-@Controller(Routers.Auth)
+@Controller('auth')
 export class AuthController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly authService: AuthenticationService,
+    private readonly queryBus: QueryBus,
+    private readonly authenticationService: AuthenticationService,
+    private readonly userMapper: UserMapper,
   ) {}
 
   @Get()
@@ -42,81 +58,94 @@ export class AuthController {
     return 'Auth 🔐';
   }
 
-  @Post(RouterRoutes.Auth.Register)
-  @UseInterceptors(TokenInterceptor)
-  async register(
-    @Body()
-    registerDto: RegisterDto,
-  ) {
-    const command = new RegisterCommand(registerDto);
-    return await this.commandBus
-      .execute<RegisterCommand, AuthenticationTokens>(command)
-      .then((tokens) => ({
-        tokens,
-        response: 'Created new user, welcome!',
-      }));
-  }
-
-  @Post(RouterRoutes.Auth.Login)
-  @UseInterceptors(TokenInterceptor)
-  async login(@Body() { emailAddress, password }: LoginDto) {
-    const command = new LoginCommand(emailAddress, password);
-    return await this.commandBus
-      .execute<LoginCommand, AuthenticationTokens>(command)
-      .then((tokens) => ({
-        tokens,
-        response: 'Successfully Logged In',
-      }));
-  }
-
-  @Post(RouterRoutes.Auth.Logout)
+  @Get('user')
   @Authenticate()
+  async getAuthenticatedUser(@Claims() claims: Claims) {
+    return await this.queryBus.execute<
+      GetAuthenticatedUserQuery,
+      UserResponseDto
+    >(new GetAuthenticatedUserQuery(claims.sub));
+  }
+
+  @Post('register')
+  @UseInterceptors(SetCookieTokensInterceptor)
+  async register(
+    @Body(new ZodValidationPipe(RegisterDto)) registerDto: RegisterDto,
+    @Res({ passthrough: true }) response: CustomExpressResponse,
+  ) {
+    const { user, authenticationTokens } = await this.commandBus.execute<
+      RegisterCommand,
+      RegisterCommandResult
+    >(new RegisterCommand(registerDto));
+    response.authenticationTokens = authenticationTokens;
+    return this.userMapper.toResponseDTO(user);
+  }
+
+  @Post('login')
+  @UseInterceptors(SetCookieTokensInterceptor)
+  async login(
+    @Body(new ZodValidationPipe(LoginDto)) loginDto: LoginDto,
+    @Ip() ipAddress: string,
+    @Res({ passthrough: true }) response: CustomExpressResponse,
+  ) {
+    const loginCommand = await this.commandBus.execute<
+      LoginCommand,
+      LoginCommandResult
+    >(new LoginCommand(loginDto, ipAddress));
+
+    const { authenticationTokens, user } = loginCommand;
+    response.authenticationTokens = authenticationTokens;
+    return this.userMapper.toResponseDTO(user);
+  }
+
+  @Post('logout')
   async logout(@Res() response: Response) {
-    this.authService.clearAuthenticationTokens(response);
+    this.authenticationService.clearAuthenticationTokens(response);
     return response.send('User Disconnected');
   }
 
-  @Post(RouterRoutes.Auth.RefreshToken)
-  @UseInterceptors(TokenInterceptor)
+  @Post('refresh')
+  @UseInterceptors(SetCookieTokensInterceptor)
   async refreshToken(
     @Cookie(Cookies.RefreshToken) refreshToken: RefreshToken,
-    @Res({ passthrough: true }) response: Response,
+    @Res({ passthrough: true }) response: CustomExpressResponse,
   ) {
-    return await this.commandBus
-      .execute<RefreshAccessTokenCommand, RefreshAccessTokenCommandResult>(
-        new RefreshAccessTokenCommand(refreshToken),
-      )
-      .then((tokens) => ({
-        tokens,
-        response: 'Refreshed Access token',
-      }))
-      .catch((e) => {
-        this.authService.clearAuthenticationTokens(response);
-        throw e;
-      });
+    try {
+      const autheticationTokens = await this.commandBus.execute<
+        RefreshAccessTokenCommand,
+        RefreshAccessTokenCommandResult
+      >(new RefreshAccessTokenCommand(refreshToken));
+      response.authenticationTokens = autheticationTokens;
+      return 'Refreshed Access token';
+    } catch (e) {
+      this.authenticationService.clearAuthenticationTokens(response);
+      throw e;
+    }
   }
 
-  @Get(RouterRoutes.Auth.Github)
-  @UseInterceptors(TokenInterceptor)
-  async githubCallback(@Query('code') code: string) {
-    const command = new ConnectWithGithubCommand(code);
-    return await this.commandBus
-      .execute<ConnectWithGithubCommand, AuthenticationTokens>(command)
-      .then((tokens) => ({
-        tokens,
-        response: 'Connected with github',
-      }));
+  @Get('github')
+  @UseInterceptors(SetCookieTokensInterceptor)
+  async githubCallback(
+    @Query('code') code: string,
+    @Res({ passthrough: true }) response: CustomExpressResponse,
+  ) {
+    response.authenticationTokens = await this.commandBus.execute<
+      ConnectWithGithubCommand,
+      AuthenticationTokens
+    >(new ConnectWithGithubCommand(code));
+    return 'Connected with github';
   }
 
-  @Get(RouterRoutes.Auth.Google)
-  @UseInterceptors(TokenInterceptor)
-  async googleCallback(@Query('code') code: string) {
-    const command = new ConnectWithGoogleCommand(code);
-    return await this.commandBus
-      .execute<ConnectWithGoogleCommand, AuthenticationTokens>(command)
-      .then((tokens) => ({
-        tokens,
-        response: 'Connected with github',
-      }));
+  @Get('google')
+  @UseInterceptors(SetCookieTokensInterceptor)
+  async googleCallback(
+    @Query('code') code: string,
+    @Res({ passthrough: true }) response: CustomExpressResponse,
+  ) {
+    response.authenticationTokens = await this.commandBus.execute<
+      ConnectWithGoogleCommand,
+      AuthenticationTokens
+    >(new ConnectWithGoogleCommand(code));
+    return 'Connected with google';
   }
 }

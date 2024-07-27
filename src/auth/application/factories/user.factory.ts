@@ -30,7 +30,7 @@ export class UserFactory {
 
     const user = await this.constructMappedUser(provider, data);
     await this.userRepository.save(user);
-    user.apply(new UserCreatedEvent(user.userId));
+    user.apply(new UserCreatedEvent(user, provider));
     return user;
   }
 
