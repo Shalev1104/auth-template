@@ -24,8 +24,6 @@ export const envSchemaValidation = z.object({
   TOKEN_SECRET: z.string(),
   COOKIE_PARSER_SECRET: z.string(),
 
-  LOGS_FILE_PATH: z.string().default('./logs'),
-
   CORS_ALLOW_ORIGINS: z.string(),
 
   GOOGLE_CLIENT_ID: z.string(),
@@ -41,4 +39,8 @@ export const envSchemaValidation = z.object({
   MAIL_USER: z.string(),
   MAIL_PASSWORD: z.string(),
   MAIL_FROM: z.string(),
+
+  TWILIO_ACCOUNT_SID: z.string(),
+  TWILIO_AUTH_TOKEN: z.string(),
+  TWILIO_PHONE_NUMBER: z.string(),
 });
