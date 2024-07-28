@@ -8,6 +8,7 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    'plugin:you-dont-need-lodash-underscore/compatible',
   ],
   root: true,
   env: {

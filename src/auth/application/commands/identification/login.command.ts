@@ -1,5 +1,5 @@
 import { AuthenticationService } from '@auth/application/services/authentication.service';
-import { EncryptionService } from '@auth/application/services/encryption.service';
+import { HashingService } from '@auth/application/services/hashing.service';
 import { AttemptedLoginEvent } from '@auth/domain/events/attempted-login';
 import { IncorrectEmailOrPasswordException } from '@auth/domain/exceptions/email-and-password/incorrect-email-or-password.exception';
 import { IUserRepository } from '@auth/domain/ports/user.repository';
@@ -34,7 +34,7 @@ export class LoginCommandHandler implements ICommandHandler {
   constructor(
     @Inject(IUserRepository) private readonly userRepository: IUserRepository,
     private readonly authenticationService: AuthenticationService,
-    private readonly encryptionService: EncryptionService,
+    private readonly hashingService: HashingService,
     private readonly eventPublisher: EventPublisher,
   ) {}
 
@@ -47,7 +47,7 @@ export class LoginCommandHandler implements ICommandHandler {
         new IncorrectEmailOrPasswordException(),
       ) as UserWithEmailAndPasswordLogin,
     );
-    const isCorrectPassword = await this.encryptionService.verifyPassword(
+    const isCorrectPassword = await this.hashingService.verifyPassword(
       password,
       user.emailAndPasswordLogin.hashedPassword,
     );

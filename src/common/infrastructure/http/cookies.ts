@@ -3,6 +3,8 @@ import { CookieOptions } from 'express';
 export enum Cookies {
   AccessToken = 'access',
   RefreshToken = 'refresh',
+  Setup2FA = '2fa-setup',
+  Login2FA = '2fa-login',
 }
 
 export const authCookieOptions: CookieOptions = {

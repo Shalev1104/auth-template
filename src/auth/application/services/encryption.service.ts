@@ -1,23 +1,30 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
+const CryptoJS = require('crypto-js');
 
 @Injectable()
 export class EncryptionService {
-  private static readonly saltChars = 10;
+  constructor(private readonly configService: ConfigService) {}
 
-  async verifyPassword(plainPw: string, hashedPw: string) {
+  async encrypt(data: string): Promise<string> {
     try {
-      return await bcrypt.compare(plainPw, hashedPw);
+      return CryptoJS.AES.encrypt(data, this.encryptionKey).toString();
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async decrypt(encrypted: string): Promise<string> {
+    try {
+      return CryptoJS.AES.decrypt(encrypted, this.encryptionKey).toString(
+        CryptoJS.enc.Utf8,
+      );
     } catch {
       throw new InternalServerErrorException();
     }
   }
 
-  async hashPlainPassword(plainPw: string) {
-    try {
-      return await bcrypt.hash(plainPw, EncryptionService.saltChars);
-    } catch {
-      throw new InternalServerErrorException();
-    }
+  private get encryptionKey(): string {
+    return String(this.configService.get('ENCRYPTION_KEY'));
   }
 }

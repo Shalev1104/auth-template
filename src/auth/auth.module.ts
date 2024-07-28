@@ -7,7 +7,7 @@ import { RegisterCommandHandler } from './application/commands/identification/re
 import { UserFactory } from './application/factories/user.factory';
 import { GetAuthenticatedUserQueryHandler } from './application/queries/get-authenticated-user.query';
 import { AuthenticationService } from './application/services/authentication.service';
-import { EncryptionService } from './application/services/encryption.service';
+import { HashingService } from './application/services/hashing.service';
 import { UserRepository } from './infrastructure/database/user.db-repository';
 import { UserMapper } from './infrastructure/database/user.mapper';
 import { AuthController } from './infrastructure/http/controllers/auth/auth.controller';
@@ -33,6 +33,24 @@ import { OAuthController } from './infrastructure/http/controllers/oauth/oauth.c
 import { UnlinkOAuthCommandHandler } from './application/commands/authorization/unlink-oauth.command';
 import { RemovedSocialLoginEventHandler } from './application/events/removed-social-login.event';
 import { IUserRepository } from './domain/ports/user.repository';
+import { SetupVerificationCommandHandler } from './application/commands/verification/setup-verification.command';
+import { SendVerificationCodeCommandHandler } from './application/commands/verification/send-verification-code.command';
+import { ResendVerificationCodeCommandHandler } from './application/commands/verification/resend-verification-code.command';
+import { InitiatedVerificationEventHandler } from './application/events/initiated-verification.event';
+import { CacheVerificationEventHandler } from './application/events/cache-verification.event';
+import { VerificationSaga } from './application/sagas/verification.saga';
+import { EncryptionService } from './application/services/encryption.service';
+import { SetupVerificationStore } from './application/services/verification/stores/setup-verification-store.service';
+import { LoginVerificationStore } from './application/services/verification/stores/login-verification-store.service';
+import { OtpService } from './application/services/verification/otp.service';
+import { TotpService } from './application/services/verification/totp.service';
+import {
+  AuthenticatorVerificator,
+  EmailVerificator,
+  OtpVerificator,
+  PhoneCallVerificator,
+  SmsVerificator,
+} from './application/services/verification/verificator.service';
 
 const commands = [
   LoginCommandHandler,
@@ -41,6 +59,10 @@ const commands = [
 
   ConnectWithOAuthCommandHandler,
   UnlinkOAuthCommandHandler,
+
+  SetupVerificationCommandHandler,
+  SendVerificationCodeCommandHandler,
+  ResendVerificationCodeCommandHandler,
 ];
 const queries = [GetAuthenticatedUserQueryHandler];
 const events = [
@@ -48,15 +70,28 @@ const events = [
   AttemptedLoginEventHandler,
   AddedSocialLoginEventHandler,
   RemovedSocialLoginEventHandler,
+  InitiatedVerificationEventHandler,
+  CacheVerificationEventHandler,
 ];
+const sagas = [VerificationSaga];
 const services = [
   JwtService,
   AuthenticationService,
+  HashingService,
   EncryptionService,
   GoogleService,
   GithubService,
   FacebookService,
   AuthMailService,
+  LoginVerificationStore,
+  SetupVerificationStore,
+  OtpService,
+  TotpService,
+  OtpVerificator,
+  AuthenticatorVerificator,
+  EmailVerificator,
+  SmsVerificator,
+  PhoneCallVerificator,
 ];
 const repositories = [
   {
@@ -87,6 +122,7 @@ const factories = [UserFactory];
     ...commands,
     ...queries,
     ...events,
+    ...sagas,
     ...services,
     ...repositories,
     ...mappers,
