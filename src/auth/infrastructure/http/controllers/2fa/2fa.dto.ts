@@ -1,3 +1,4 @@
+import { VerificationCode } from '@auth/domain/value-objects/VerificationCode';
 import { OTPChannel } from '@common/infrastructure/database/typeorm/enums/OtpChannel.enum';
 import { z } from 'zod';
 
@@ -6,3 +7,8 @@ export const SetupVerificationDto = z.object({
   setAsDefault2fa: z.boolean().default(false),
 });
 export type SetupVerificationDto = z.infer<typeof SetupVerificationDto>;
+
+export const ConfirmVerificationDto = z.object({
+  code: VerificationCode,
+});
+export type ConfirmVerificationDto = z.infer<typeof ConfirmVerificationDto>;

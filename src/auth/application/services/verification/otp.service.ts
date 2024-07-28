@@ -6,7 +6,7 @@ import {
   verificationDigits,
 } from '@auth/domain/value-objects/VerificationCode';
 import { validateSchema } from '@common/domain/entity-validate';
-import { EncryptionService } from '../encryption.service';
+import { EncryptionService } from '@common/application/services/cryptography/encryption.service';
 
 @Injectable()
 export class OtpService {

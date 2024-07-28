@@ -35,6 +35,8 @@ import { CustomExpressResponse } from '@common/infrastructure/http/express/http-
 import { UserMapper } from '../../../database/user.mapper';
 import { ZodValidationPipe } from '@common/infrastructure/http/pipes/zod-validation.pipe';
 import { GetAuthenticatedUserQuery } from '@auth/application/queries/get-authenticated-user.query';
+import { LoginVerificationStore } from '@auth/application/services/verification/stores/login-verification-store.service';
+import { getChannelName } from '@common/infrastructure/database/typeorm/enums/OtpChannel.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -43,6 +45,7 @@ export class AuthController {
     private readonly queryBus: QueryBus,
     private readonly authenticationService: AuthenticationService,
     private readonly userMapper: UserMapper,
+    private readonly loginVerificationStore: LoginVerificationStore,
   ) {}
 
   @Get()
@@ -84,6 +87,16 @@ export class AuthController {
       LoginCommand,
       LoginCommandResult
     >(new LoginCommand(loginDto, ipAddress));
+
+    if (loginCommand.type === 'Login2FA') {
+      const { twoFactorAuthenticationId, channelId, user } = loginCommand;
+      this.loginVerificationStore.setCookie(response, {
+        id: twoFactorAuthenticationId,
+        channelId,
+        userId: user.userId,
+      });
+      return `Complete login: verify the code by ${getChannelName(channelId)}`;
+    }
 
     const { authenticationTokens, user } = loginCommand;
     response.authenticationTokens = authenticationTokens;

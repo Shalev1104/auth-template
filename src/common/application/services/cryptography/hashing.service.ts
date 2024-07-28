@@ -3,19 +3,17 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class HashingService {
-  private static readonly saltChars = 10;
-
-  async verifyPassword(plainPw: string, hashedPw: string) {
+  async hash(data: string, saltCharacters = 10): Promise<string> {
     try {
-      return await bcrypt.compare(plainPw, hashedPw);
+      return await bcrypt.hash(data, saltCharacters);
     } catch {
       throw new InternalServerErrorException();
     }
   }
 
-  async hashPlainPassword(plainPw: string) {
+  async compare(data: string, hashedData: string): Promise<boolean> {
     try {
-      return await bcrypt.hash(plainPw, HashingService.saltChars);
+      return await bcrypt.compare(data, hashedData);
     } catch {
       throw new InternalServerErrorException();
     }

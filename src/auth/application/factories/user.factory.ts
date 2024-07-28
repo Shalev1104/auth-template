@@ -5,7 +5,6 @@ import {
 } from '@auth/domain/entities/OAuthLogin.entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { validateSchema } from '@common/domain/entity-validate';
-import { HashingService } from '../services/hashing.service';
 import { PlainPassword } from '@auth/domain/value-objects/Password';
 import { User } from '@auth/domain/User.aggregate';
 import { EmailAndPasswordLogin } from '@auth/domain/entities/EmailAndPasswordLogin.entity';
@@ -18,12 +17,13 @@ import { IFacebookAuthorization } from '@auth/infrastructure/oauth/facebook/face
 import { RegisterDto } from '@auth/infrastructure/http/controllers/auth/auth.dto';
 import { ProviderNotExistException } from '@auth/domain/exceptions/oauth/provider-not-exist.exception';
 import { IUserRepository } from '@auth/domain/ports/user.repository';
+import { IdentificationService } from '../services/identification.service';
 
 @Injectable()
 export class UserFactory {
   constructor(
     @Inject(IUserRepository) private readonly userRepository: IUserRepository,
-    private readonly hashingService: HashingService,
+    private readonly identificationService: IdentificationService,
   ) {}
 
   async createUser(provider: LoginProvider, data: unknown): Promise<User> {
@@ -85,7 +85,7 @@ export class UserFactory {
     register: RegisterDto,
   ): Promise<User> {
     const plainPassword = validateSchema(PlainPassword, register.password);
-    const hashedPassword = await this.hashingService.hashPlainPassword(
+    const hashedPassword = await this.identificationService.hashPlainPassword(
       plainPassword,
     );
 

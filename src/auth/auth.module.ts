@@ -7,7 +7,6 @@ import { RegisterCommandHandler } from './application/commands/identification/re
 import { UserFactory } from './application/factories/user.factory';
 import { GetAuthenticatedUserQueryHandler } from './application/queries/get-authenticated-user.query';
 import { AuthenticationService } from './application/services/authentication.service';
-import { HashingService } from './application/services/hashing.service';
 import { UserRepository } from './infrastructure/database/user.db-repository';
 import { UserMapper } from './infrastructure/database/user.mapper';
 import { AuthController } from './infrastructure/http/controllers/auth/auth.controller';
@@ -39,7 +38,6 @@ import { ResendVerificationCodeCommandHandler } from './application/commands/ver
 import { InitiatedVerificationEventHandler } from './application/events/initiated-verification.event';
 import { CacheVerificationEventHandler } from './application/events/cache-verification.event';
 import { VerificationSaga } from './application/sagas/verification.saga';
-import { EncryptionService } from './application/services/encryption.service';
 import { SetupVerificationStore } from './application/services/verification/stores/setup-verification-store.service';
 import { LoginVerificationStore } from './application/services/verification/stores/login-verification-store.service';
 import { OtpService } from './application/services/verification/otp.service';
@@ -51,6 +49,9 @@ import {
   PhoneCallVerificator,
   SmsVerificator,
 } from './application/services/verification/verificator.service';
+import { HashingService } from '@common/application/services/cryptography/hashing.service';
+import { EncryptionService } from '@common/application/services/cryptography/encryption.service';
+import { IdentificationService } from './application/services/identification.service';
 
 const commands = [
   LoginCommandHandler,
@@ -79,6 +80,7 @@ const services = [
   AuthenticationService,
   HashingService,
   EncryptionService,
+  IdentificationService,
   GoogleService,
   GithubService,
   FacebookService,
