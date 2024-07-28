@@ -4,7 +4,7 @@ import { LoginVerificationStore } from '@auth/application/services/verification/
 import { VerificationId } from '@auth/domain/entities/Verification.entity';
 import { AttemptedLoginEvent } from '@auth/domain/events/attempted-login';
 import { InitiatedVerificationEvent } from '@auth/domain/events/initiated-verification.event';
-import { VerificationCodeNotFoundException } from '@auth/domain/exceptions/2fa/verification-code-not-found.exception';
+import { VerificationNotFoundException } from '@auth/domain/exceptions/2FA/verification-not-found.exception';
 import { IncorrectEmailOrPasswordException } from '@auth/domain/exceptions/email-and-password/incorrect-email-or-password.exception';
 import { IUserRepository } from '@auth/domain/ports/user.repository';
 import {
@@ -88,7 +88,7 @@ export class LoginCommandHandler implements ICommandHandler {
     const verification = user.emailAndPasswordLogin.verifications.get(
       primaryVerificationId,
     );
-    if (!verification) throw new VerificationCodeNotFoundException();
+    if (!verification) throw new VerificationNotFoundException();
 
     const twoFactorAuthenticationId = v4();
 

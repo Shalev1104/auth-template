@@ -65,6 +65,7 @@ import { Disabled2FAEventHandler } from './application/events/disabled-2fa.event
 import { RemovedVerificationEventHandler } from './application/events/removed-verification.event';
 import { ITwoFactorAuthenticationRepository } from './domain/ports/two-factor-authentication.repository';
 import { TwoFactorAuthenticationRepository } from './infrastructure/database/two-factor-authentication.db-repository';
+import { TwoFactorAuthenticationController } from './infrastructure/http/controllers/2fa/2fa.controller';
 
 const commands = [
   LoginCommandHandler,
@@ -149,7 +150,11 @@ const factories = [UserFactory];
       OtpChannelSchema,
     ]),
   ],
-  controllers: [AuthController, OAuthController],
+  controllers: [
+    AuthController,
+    OAuthController,
+    TwoFactorAuthenticationController,
+  ],
   providers: [
     ...commands,
     ...queries,

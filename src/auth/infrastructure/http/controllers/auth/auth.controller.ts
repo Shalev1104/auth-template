@@ -53,6 +53,12 @@ export class AuthController {
     return 'Auth 🔐';
   }
 
+  @Get('protected')
+  @Authenticate()
+  protected() {
+    return 'access granted 🔓';
+  }
+
   @Get('user')
   @Authenticate()
   async getAuthenticatedUser(@Claims() claims: Claims) {

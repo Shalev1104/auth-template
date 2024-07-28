@@ -98,6 +98,7 @@ export class UserMapper {
         userId: user.userId,
         providerId: oa.providerId,
         providerName: oa.providerName,
+        avatarImageUrl: undefinedToNullOrValue(oa.avatarImageUrl),
         emailAddress: undefinedToNullOrValue(oa.emailAddress),
       })),
     } as UserSchema);

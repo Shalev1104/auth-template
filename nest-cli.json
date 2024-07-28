@@ -4,6 +4,12 @@
   "sourceRoot": "src/server",
   "entryFile": "index",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "assets": [
+      {
+        "include": "../auth/infrastructure/mail/templates/*.hbs",
+        "outDir": "dist/src/auth"
+      }
+    ]
   }
 }

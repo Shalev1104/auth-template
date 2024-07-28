@@ -77,12 +77,14 @@ export class User extends AggregateRoot {
       providers.push({
         loginProvider: this.emailAndPasswordLogin.providerName,
         emailAddress: this.emailAndPasswordLogin.emailAddress,
+        avatarImageUrl: this._userProfile.avatarImageUrl,
       });
 
     providers.push(
       ...Array.from(this._oAuthLogin).map((f) => ({
         loginProvider: f.providerName,
         emailAddress: f.emailAddress,
+        avatarImageUrl: f.avatarImageUrl,
       })),
     );
     return providers;
