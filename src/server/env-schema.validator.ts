@@ -28,6 +28,13 @@ export const envSchemaValidation = z.object({
 
   CORS_ALLOW_ORIGINS: z.string(),
 
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
+  GITHUB_CLIENT_ID: z.string(),
+  GITHUB_CLIENT_SECRET: z.string(),
+  FACEBOOK_CLIENT_ID: z.string(),
+  FACEBOOK_CLIENT_SECRET: z.string(),
+
   MAIL_SERVICE: z.string(),
   MAIL_HOST: z.string(),
   MAIL_PORT: StringToNumber.default(465),
