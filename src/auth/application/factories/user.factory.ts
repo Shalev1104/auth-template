@@ -3,9 +3,8 @@ import {
   GoogleLogin,
   FacebookLogin,
 } from '@auth/domain/entities/OAuthLogin.entity';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { validateSchema } from '@common/domain/entity-validate';
-import { UserRepository } from '@auth/infrastructure/database/user.db-repository';
 import { EncryptionService } from '../services/encryption.service';
 import { PlainPassword } from '@auth/domain/value-objects/Password';
 import { User } from '@auth/domain/User.aggregate';
@@ -18,11 +17,12 @@ import { IGithubAuthorization } from '@auth/infrastructure/oauth/github/github.a
 import { IFacebookAuthorization } from '@auth/infrastructure/oauth/facebook/facebook.authorization';
 import { RegisterDto } from '@auth/infrastructure/http/controllers/auth/auth.dto';
 import { ProviderNotExistException } from '@auth/domain/exceptions/oauth/provider-not-exist.exception';
+import { IUserRepository } from '@auth/domain/ports/user.repository';
 
 @Injectable()
 export class UserFactory {
   constructor(
-    private readonly userRepository: UserRepository,
+    @Inject(IUserRepository) private readonly userRepository: IUserRepository,
     private readonly encryptionService: EncryptionService,
   ) {}
 

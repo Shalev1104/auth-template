@@ -9,7 +9,8 @@ import { NotAllowedToUnlinkException } from '@auth/domain/exceptions/oauth/not-a
 import OAuth2Service from '@auth/infrastructure/oauth/oauth2.service';
 import { User, UserId } from '@auth/domain/User.aggregate';
 import { RemovedSocialLoginEvent } from '@auth/domain/events/removed-social-login.event';
-import { UserRepository } from '@auth/infrastructure/database/user.db-repository';
+import { IUserRepository } from '@auth/domain/ports/user.repository';
+import { Inject } from '@nestjs/common';
 
 export class UnlinkOAuthCommand<T, U> implements ICommand {
   constructor(
@@ -24,7 +25,7 @@ export class UnlinkOAuthCommandHandler<T, U>
   implements ICommandHandler<UnlinkOAuthCommand<T, U>>
 {
   constructor(
-    private readonly userRepository: UserRepository,
+    @Inject(IUserRepository) private readonly userRepository: IUserRepository,
     private readonly eventPublisher: EventPublisher,
   ) {}
 

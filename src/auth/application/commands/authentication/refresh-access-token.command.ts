@@ -1,11 +1,12 @@
 import { AuthenticationService } from '@auth/application/services/authentication.service';
 import { MissingRefreshTokenException } from '@auth/domain/exceptions/tokens/missing-refresh-token.exception';
+import { IUserRepository } from '@auth/domain/ports/user.repository';
 import { User } from '@auth/domain/User.aggregate';
 import {
   AuthenticationTokens,
   RefreshToken,
 } from '@auth/domain/value-objects/Tokens';
-import { UserRepository } from '@auth/infrastructure/database/user.db-repository';
+import { Inject } from '@nestjs/common';
 import {
   ICommand,
   CommandHandler,
@@ -22,7 +23,7 @@ export type RefreshAccessTokenCommandResult = Promise<AuthenticationTokens>;
 @CommandHandler(RefreshAccessTokenCommand)
 export class RefreshAccessTokenCommandHandler implements ICommandHandler {
   constructor(
-    private readonly userRepository: UserRepository,
+    @Inject(IUserRepository) private readonly userRepository: IUserRepository,
     private readonly authenticationService: AuthenticationService,
     private readonly eventPublisher: EventPublisher,
   ) {}

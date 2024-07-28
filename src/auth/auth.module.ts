@@ -32,6 +32,7 @@ import { FacebookService } from './infrastructure/oauth/facebook/facebook.servic
 import { OAuthController } from './infrastructure/http/controllers/oauth/oauth.controller';
 import { UnlinkOAuthCommandHandler } from './application/commands/authorization/unlink-oauth.command';
 import { RemovedSocialLoginEventHandler } from './application/events/removed-social-login.event';
+import { IUserRepository } from './domain/ports/user.repository';
 
 const commands = [
   LoginCommandHandler,
@@ -57,7 +58,12 @@ const services = [
   FacebookService,
   AuthMailService,
 ];
-const repositories = [UserRepository];
+const repositories = [
+  {
+    provide: IUserRepository,
+    useClass: UserRepository,
+  },
+];
 const mappers = [UserMapper];
 const factories = [UserFactory];
 

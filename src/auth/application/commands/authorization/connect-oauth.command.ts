@@ -15,7 +15,8 @@ import { UserAlreadyLinkedException } from '@auth/domain/exceptions/oauth/user-a
 import { ProviderAlreadyLinkedException } from '@auth/domain/exceptions/oauth/provider-already-linked.exception';
 import { MismatchStateException } from '@auth/domain/exceptions/oauth/incorrect-oauth-state.exception';
 import { AuthenticationTokens } from '@auth/domain/value-objects/Tokens';
-import { UserRepository } from '@auth/infrastructure/database/user.db-repository';
+import { IUserRepository } from '@auth/domain/ports/user.repository';
+import { Inject } from '@nestjs/common';
 
 export class ConnectWithOAuthCommand<T, U> implements ICommand {
   constructor(
@@ -34,7 +35,7 @@ export class ConnectWithOAuthCommandHandler<T, U>
   implements ICommandHandler<ConnectWithOAuthCommand<T, U>>
 {
   constructor(
-    private readonly userRepository: UserRepository,
+    @Inject(IUserRepository) private readonly userRepository: IUserRepository,
     private readonly userFactory: UserFactory,
     private readonly eventPublisher: EventPublisher,
     private readonly authenticationService: AuthenticationService,

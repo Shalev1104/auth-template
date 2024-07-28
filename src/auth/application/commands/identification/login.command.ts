@@ -2,13 +2,14 @@ import { AuthenticationService } from '@auth/application/services/authentication
 import { EncryptionService } from '@auth/application/services/encryption.service';
 import { AttemptedLoginEvent } from '@auth/domain/events/attempted-login';
 import { IncorrectEmailOrPasswordException } from '@auth/domain/exceptions/email-and-password/incorrect-email-or-password.exception';
+import { IUserRepository } from '@auth/domain/ports/user.repository';
 import {
   User,
   UserWithEmailAndPasswordLogin,
 } from '@auth/domain/User.aggregate';
 import { AuthenticationTokens } from '@auth/domain/value-objects/Tokens';
-import { UserRepository } from '@auth/infrastructure/database/user.db-repository';
 import { LoginDto } from '@auth/infrastructure/http/controllers/auth/auth.dto';
+import { Inject } from '@nestjs/common';
 import {
   ICommand,
   CommandHandler,
@@ -31,7 +32,7 @@ export type LoginCommandResult = Promise<{
 @CommandHandler(LoginCommand)
 export class LoginCommandHandler implements ICommandHandler {
   constructor(
-    private readonly userRepository: UserRepository,
+    @Inject(IUserRepository) private readonly userRepository: IUserRepository,
     private readonly authenticationService: AuthenticationService,
     private readonly encryptionService: EncryptionService,
     private readonly eventPublisher: EventPublisher,
