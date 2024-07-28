@@ -66,6 +66,10 @@ import { RemovedVerificationEventHandler } from './application/events/removed-ve
 import { ITwoFactorAuthenticationRepository } from './domain/ports/two-factor-authentication.repository';
 import { TwoFactorAuthenticationRepository } from './infrastructure/database/two-factor-authentication.db-repository';
 import { TwoFactorAuthenticationController } from './infrastructure/http/controllers/2fa/2fa.controller';
+import { GetAllEmailAndPasswordUsersQueryHandler } from './application/queries/get-all-email-and-password-users.query';
+import { GetAllTwoFactorAuthenticationUsersQueryHandler } from './application/queries/get-all-two-factor-authentication-users.query';
+import { GetAllUsersQueryHandler } from './application/queries/get-all-users.query';
+import { GetUserSocialAccountsQueryHandler } from './application/queries/get-user-social-accounts.query';
 
 const commands = [
   LoginCommandHandler,
@@ -87,6 +91,10 @@ const queries = [
   GetAuthenticatedUserQueryHandler,
   GetAllOtpChannelsQueryHandler,
   GetUserVerificationsQueryHandler,
+  GetAllEmailAndPasswordUsersQueryHandler,
+  GetAllTwoFactorAuthenticationUsersQueryHandler,
+  GetAllUsersQueryHandler,
+  GetUserSocialAccountsQueryHandler,
 ];
 const events = [
   UserCreatedEventHandler,
