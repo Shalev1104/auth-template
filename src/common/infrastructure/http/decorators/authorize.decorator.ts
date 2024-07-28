@@ -2,6 +2,7 @@ import { SetMetadata, UseGuards, applyDecorators } from '@nestjs/common';
 import { AuthGuard } from '@auth/infrastructure/http/guards/auth.guard';
 import { LoginProvider } from '@auth/domain/value-objects/LoginProvider';
 import { OAuthProvider } from '@common/infrastructure/database/typeorm/enums/OAuthProvider.enum';
+import { TwoFactorAuthenticationGuard } from '@auth/infrastructure/http/guards/2fa.guard';
 
 // Authorization guards to verify auth state
 export const AUTHORIZATIONS_KEY = 'AUTHORIZATIONS';
@@ -20,4 +21,8 @@ export function AuthorizeEmailAndPassword() {
 }
 export function AuthorizeOAuth() {
   return Authorize(...Object.values(OAuthProvider));
+}
+
+export function AuthorizeTwoFactorAuthentication() {
+  return applyDecorators(UseGuards(TwoFactorAuthenticationGuard));
 }
