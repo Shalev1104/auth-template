@@ -30,7 +30,7 @@ export default abstract class OAuth2Service<TAuthorization, TToken> {
   setOAuthStateToResponseCookie(response: Response, clientRedirectUrl = '/') {
     response.cookie(
       this.state,
-      new URL(clientRedirectUrl, process.env.APP_URL),
+      new URL(clientRedirectUrl, process.env.CORS_ALLOW_ORIGINS),
       {
         ...authCookieOptions,
         maxAge: 1000 * 60 * 15,

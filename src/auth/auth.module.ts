@@ -52,6 +52,19 @@ import {
 import { HashingService } from '@common/application/services/cryptography/hashing.service';
 import { EncryptionService } from '@common/application/services/cryptography/encryption.service';
 import { IdentificationService } from './application/services/identification.service';
+import { ConfirmVerificationRegisterationCommandHandler } from './application/commands/verification/confirm-verification-registeration.command';
+import { ConfirmTwoFactorAuthenticationCommandHandler } from './application/commands/verification/confirm-two-factor-authentication.command';
+import { Set2FACommandHandler } from './application/commands/verification/set-2fa.command';
+import { RemoveVerificationCommandHandler } from './application/commands/verification/remove-verification.command';
+import { GetUserVerificationsQueryHandler } from './application/queries/get-user-verifications.query';
+import { GetAllOtpChannelsQueryHandler } from './application/queries/get-all-otp-channels.query';
+import { AttemptedConfirm2FAEventHandler } from './application/events/attempted-confirm-2fa.event';
+import { AddedVerificationEventHandler } from './application/events/added-verification.event';
+import { Enabled2FAEventHandler } from './application/events/enabled-2fa.event';
+import { Disabled2FAEventHandler } from './application/events/disabled-2fa.event';
+import { RemovedVerificationEventHandler } from './application/events/removed-verification.event';
+import { ITwoFactorAuthenticationRepository } from './domain/ports/two-factor-authentication.repository';
+import { TwoFactorAuthenticationRepository } from './infrastructure/database/two-factor-authentication.db-repository';
 
 const commands = [
   LoginCommandHandler,
@@ -64,15 +77,28 @@ const commands = [
   SetupVerificationCommandHandler,
   SendVerificationCodeCommandHandler,
   ResendVerificationCodeCommandHandler,
+  ConfirmVerificationRegisterationCommandHandler,
+  ConfirmTwoFactorAuthenticationCommandHandler,
+  Set2FACommandHandler,
+  RemoveVerificationCommandHandler,
 ];
-const queries = [GetAuthenticatedUserQueryHandler];
+const queries = [
+  GetAuthenticatedUserQueryHandler,
+  GetAllOtpChannelsQueryHandler,
+  GetUserVerificationsQueryHandler,
+];
 const events = [
   UserCreatedEventHandler,
   AttemptedLoginEventHandler,
+  AttemptedConfirm2FAEventHandler,
+  AddedVerificationEventHandler,
   AddedSocialLoginEventHandler,
   RemovedSocialLoginEventHandler,
-  InitiatedVerificationEventHandler,
   CacheVerificationEventHandler,
+  InitiatedVerificationEventHandler,
+  Enabled2FAEventHandler,
+  Disabled2FAEventHandler,
+  RemovedVerificationEventHandler,
 ];
 const sagas = [VerificationSaga];
 const services = [
@@ -81,10 +107,10 @@ const services = [
   HashingService,
   EncryptionService,
   IdentificationService,
+  AuthMailService,
   GoogleService,
   GithubService,
   FacebookService,
-  AuthMailService,
   LoginVerificationStore,
   SetupVerificationStore,
   OtpService,
@@ -99,6 +125,10 @@ const repositories = [
   {
     provide: IUserRepository,
     useClass: UserRepository,
+  },
+  {
+    provide: ITwoFactorAuthenticationRepository,
+    useClass: TwoFactorAuthenticationRepository,
   },
 ];
 const mappers = [UserMapper];

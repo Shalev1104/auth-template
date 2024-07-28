@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Environment } from '@server/environment';
 
-export const StringToNumber = z
+const StringToNumber = z
   .custom<number>()
   .refine((value) => +value)
   .transform((value) => Number(value));
@@ -23,6 +23,7 @@ export const envSchemaValidation = z.object({
 
   TOKEN_SECRET: z.string(),
   COOKIE_PARSER_SECRET: z.string(),
+  ENCRYPTION_KEY: z.string(),
 
   CORS_ALLOW_ORIGINS: z.string(),
 

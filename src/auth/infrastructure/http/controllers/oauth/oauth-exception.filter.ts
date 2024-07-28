@@ -17,7 +17,7 @@ export class OAuthExceptionFilter implements ExceptionFilter {
     const clientRedirectUrl = request.signedCookies[state];
     if (clientRedirectUrl) response.clearCookie(state);
 
-    const url = new URL(clientRedirectUrl || process.env.APP_URL);
+    const url = new URL(clientRedirectUrl || process.env.CORS_ALLOW_ORIGINS);
     url.searchParams.set('error', exception.message);
     response.redirect(url.href);
   }

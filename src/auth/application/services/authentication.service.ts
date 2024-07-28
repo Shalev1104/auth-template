@@ -50,9 +50,9 @@ export class AuthenticationService {
         sub: user.userId,
         name: user.name,
         accounts: user.getLoginAccounts(),
-        iss: this.configService.get('APP_URL').toString(),
+        iss: this.configService.get('CORS_ALLOW_ORIGINS').toString(),
         jti: jwtId,
-        aud: [this.configService.get('APP_URL').toString()],
+        aud: [this.configService.get('CORS_ALLOW_ORIGINS').toString()],
         '2fa': !!user.emailAndPasswordLogin?.isEnabled2FA(),
       };
       const refreshTokenPayload: RefreshTokenPayload = {

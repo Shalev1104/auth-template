@@ -8,13 +8,21 @@ import {
   Req,
   Inject,
   Ip,
+  Patch,
+  Delete,
+  Param,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   SetupVerificationCommand,
   SetupVerificationCommandResult,
 } from '@auth/application/commands/verification/setup-verification.command';
-import { ConfirmVerificationDto, SetupVerificationDto } from './2fa.dto';
+import {
+  ConfirmVerificationDto,
+  Enable2FADto,
+  Set2FADto,
+  SetupVerificationDto,
+} from './2fa.dto';
 import {
   Claims,
   MaybeClaims,
@@ -31,8 +39,8 @@ import {
 import { Request } from 'express';
 import { User } from '@auth/domain/User.aggregate';
 import { TotpService } from '@auth/application/services/verification/totp.service';
-import { IUserRepository } from '@auth/domain/ports/User.repository';
-import { SharedSecretNotFound } from '@auth/domain/exceptions/2FA/shared-secret-not-found.exception';
+import { IUserRepository } from '@auth/domain/ports/user.repository';
+import { SharedSecretNotFound } from '@auth/domain/exceptions/2fa/shared-secret-not-found.exception';
 import { UserNotPermittedException } from '@auth/domain/exceptions/not-permitted.exception';
 import { SetupVerificationStore } from '@auth/application/services/verification/stores/setup-verification-store.service';
 import { GetAllOtpChannelsQuery } from '@auth/application/queries/get-all-otp-channels.query';
@@ -48,6 +56,16 @@ import {
 } from '@auth/application/commands/verification/confirm-two-factor-authentication.command';
 import { UserMapper } from '@auth/infrastructure/database/user.mapper';
 import { LoginVerificationStore } from '@auth/application/services/verification/stores/login-verification-store.service';
+import {
+  Set2FACommand,
+  Set2FACommandResult,
+} from '@auth/application/commands/verification/set-2fa.command';
+import { GetUserVerificationsQuery } from '@auth/application/queries/get-user-verifications.query';
+import { VerificationId } from '@auth/domain/entities/Verification.entity';
+import {
+  RemoveVerificationCommand,
+  RemoveVerificationCommandResult,
+} from '@auth/application/commands/verification/remove-verification.command';
 
 @Controller('auth/2fa')
 export class TwoFactorAuthenticationController {
@@ -67,6 +85,36 @@ export class TwoFactorAuthenticationController {
       GetAllOtpChannelsQuery,
       OtpChannelSchema[]
     >(new GetAllOtpChannelsQuery());
+  }
+  @Patch('set')
+  @AuthorizeEmailAndPassword()
+  async set2FA(
+    @Claims() claims: Claims,
+    @Body(new ZodValidationPipe(Set2FADto)) { verificationId }: Set2FADto,
+  ) {
+    return await this.commandBus.execute<Set2FACommand, Set2FACommandResult>(
+      new Set2FACommand(claims.sub, verificationId),
+    );
+  }
+
+  @Patch('enable')
+  @AuthorizeEmailAndPassword()
+  async enable2FA(
+    @Claims() claims: Claims,
+    @Body(new ZodValidationPipe(Enable2FADto))
+    { verificationId }: Enable2FADto,
+  ) {
+    return await this.commandBus.execute<Set2FACommand, Set2FACommandResult>(
+      new Set2FACommand(claims.sub, verificationId),
+    );
+  }
+
+  @Patch('disable')
+  @AuthorizeEmailAndPassword()
+  async disable2FA(@Claims() claims: Claims) {
+    return await this.commandBus.execute<Set2FACommand, Set2FACommandResult>(
+      new Set2FACommand(claims.sub),
+    );
   }
 
   @Post('setup')
@@ -159,5 +207,26 @@ export class TwoFactorAuthenticationController {
       user.emailAndPasswordLogin.sharedSecret,
       user.emailAndPasswordLogin.emailAddress,
     );
+  }
+
+  @Get('verifications')
+  @AuthorizeEmailAndPassword()
+  async getUserVerificationMethods(@Claims() claims: Claims) {
+    return await this.queryBus.execute(
+      new GetUserVerificationsQuery(claims.sub),
+    );
+  }
+
+  @Delete('verifications/:verificationId')
+  @AuthorizeEmailAndPassword()
+  async removeVerification(
+    @Claims() claims: Claims,
+    @Param('verificationId') verificationId: VerificationId,
+  ) {
+    await this.commandBus.execute<
+      RemoveVerificationCommand,
+      RemoveVerificationCommandResult
+    >(new RemoveVerificationCommand(claims.sub, verificationId));
+    return `Successfully removed verification ${verificationId} from your account`;
   }
 }

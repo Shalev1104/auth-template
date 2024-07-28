@@ -15,8 +15,8 @@ import {
 import { IncorrectOTPException } from '@auth/domain/exceptions/2fa/incorrect-otp.exception';
 import { AuthenticationService } from '@auth/application/services/authentication.service';
 import { UserNotPermittedException } from '@auth/domain/exceptions/not-permitted.exception';
-import { VerificationAlreadyExistException } from '@auth/domain/exceptions/2FA/verification-already-exist.exception';
-import { IUserRepository } from '@auth/domain/ports/User.repository';
+import { VerificationAlreadyExistException } from '@auth/domain/exceptions/2fa/verification-already-exist.exception';
+import { IUserRepository } from '@auth/domain/ports/user.repository';
 import { Inject } from '@nestjs/common';
 import {
   AuthenticatorVerificator,
