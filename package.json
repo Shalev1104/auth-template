@@ -18,9 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
-    "seed:run": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
-    "typeorm:seed": "npm run build && ts-node ./node_modules/typeorm-extension/dist/cli/index.js seed -d ./src/common/infrastructure/database/database.module.ts"
+    "seed:run": "ts-node src/common/infrastructure/database/typeorm/seeds/seed.ts"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.9.1",
@@ -52,6 +50,7 @@
     "rxjs": "^7.8.1",
     "speakeasy": "^2.0.0",
     "twilio": "^4.17.0",
+    "typeorm-extension": "^3.6.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -86,7 +85,6 @@
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
-    "typeorm-seeding": "^1.6.1",
     "typescript": "^5.1.3"
   },
   "jest": {

@@ -13,12 +13,7 @@ import { AuthController } from './infrastructure/http/controllers/auth/auth.cont
 import { HttpModule } from '@nestjs/axios';
 import { DatabaseModule } from '@common/infrastructure/database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserSchema } from '@common/infrastructure/database/typeorm/schemas/user.schema';
-import { OAuthLoginSchema } from '@common/infrastructure/database/typeorm/schemas/oAuthLogin.schema';
 import { UserCreatedEventHandler } from './application/events/user-created.event';
-import { VerificationSchema } from '@common/infrastructure/database/typeorm/schemas/verifications.schema';
-import { TwoFactorAuthenticationSchema } from '@common/infrastructure/database/typeorm/schemas/twoFactorAuthentication.schema';
-import { OtpChannelSchema } from '@common/infrastructure/database/typeorm/schemas/otpChannel.schema';
 import { CommunicationsModule } from '@common/infrastructure/communications/communications.module';
 import { AuthMailService } from './infrastructure/mail/auth-mail.service';
 import { ConfigModule } from '@nestjs/config';
@@ -70,6 +65,7 @@ import { GetAllEmailAndPasswordUsersQueryHandler } from './application/queries/g
 import { GetAllTwoFactorAuthenticationUsersQueryHandler } from './application/queries/get-all-two-factor-authentication-users.query';
 import { GetAllUsersQueryHandler } from './application/queries/get-all-users.query';
 import { GetUserSocialAccountsQueryHandler } from './application/queries/get-user-social-accounts.query';
+import { entities } from '@common/infrastructure/database/typeorm/config/datasource-options';
 
 const commands = [
   LoginCommandHandler,
@@ -150,13 +146,7 @@ const factories = [UserFactory];
     ConfigModule,
     DatabaseModule,
     CommunicationsModule,
-    TypeOrmModule.forFeature([
-      UserSchema,
-      OAuthLoginSchema,
-      VerificationSchema,
-      TwoFactorAuthenticationSchema,
-      OtpChannelSchema,
-    ]),
+    TypeOrmModule.forFeature(entities),
   ],
   controllers: [
     AuthController,

@@ -16,8 +16,8 @@ export const RegisterDto = z.object({
 export type RegisterDto = z.infer<typeof RegisterDto>;
 
 export const LoginDto = z.object({
-  emailAddress: EmailAddress,
-  password: PlainPassword,
+  emailAddress: z.string(),
+  password: z.string(),
 });
 export type LoginDto = z.infer<typeof LoginDto>;
 
