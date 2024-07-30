@@ -47,8 +47,11 @@
 - Homepage URL: application base URL (for example: http://localhost:3000)
 - Redirect/Callback URL: application base URL + /auth/oauth/connect/[provider]/callback (for example: http://localhost:3000/auth/oauth/connect/google/callback)
 
-References:
-[Google OAuth 2](https://support.google.com/cloud/answer/6158849)
-[Facebook OAuth 2](https://developers.facebook.com/docs/facebook-login/guides/access-tokens/#clienttokens)
-[Github OAuth 2](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authenticating-to-the-rest-api-with-an-oauth-app#registering-your-app)
-[Twilio](https://www.twilio.com/docs/usage/tutorials/how-to-use-your-free-trial-account-namer)
+### References:
+- [Google OAuth 2](https://support.google.com/cloud/answer/6158849)
+
+- [Facebook OAuth 2](https://developers.facebook.com/docs/facebook-login/guides/access-tokens/#clienttokens)
+
+- [Github OAuth 2](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authenticating-to-the-rest-api-with-an-oauth-app#registering-your-app)
+
+- [Twilio](https://www.twilio.com/docs/usage/tutorials/how-to-use-your-free-trial-account-namer)
