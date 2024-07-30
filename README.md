@@ -58,11 +58,15 @@ This template Serves as an excellent starting point, a reference for best practi
    - Fill in the environment variables in the `.env` file.
      For more details, refer to the [environment documentation file](./docs/environment.md).
 
-4. **Seeding the database**
+4. **Create Docker containers**
+   ```
+   docker-compose up -d
+   ```
+5. **Seeding the database**
    ```
    npm run seed:run
    ```
-5. **Run the server**
+6. **Run the server**
    ```
    npm run start:dev
    ```
