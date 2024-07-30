@@ -31,7 +31,7 @@ services:
 
 volumes:
   pg-data:
-    external: true
+    external: false
   redis-data:
     driver: local
 
