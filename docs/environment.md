@@ -44,7 +44,7 @@
 > [!Note]
 > When configuring OAuth 2, ensure you enter the following information:
 > - Homepage URL: application base URL (for example: http://localhost:3000)
-> - Redirect/Callback URL: application base URL + /auth/oauth/connect/[provider]/callback (for example: http://localhost:3000/auth/oauth/connect/google/callback)
+> - Redirect/Callback URL: application base URL + /api/auth/oauth/connect/[provider]/callback (for example: http://localhost:3000/api/auth/oauth/connect/google/callback)
 
 ### References:
 - [Google OAuth 2](https://support.google.com/cloud/answer/6158849)
