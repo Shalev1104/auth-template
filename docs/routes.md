@@ -1,3 +1,5 @@
+Get Postman collection: https://interstellar-star-754021.postman.co/workspace/shalev~806eb5ab-f8ca-4ac1-945a-237b2ac5c6f4/collection/17032500-2977ad45-d210-4149-8214-86032ed08090?action=share&creator=17032500
+
 | **URL**                                     | **HTTP Method** | **Description**                                                                                           | **Content**                                                                                                                |
 | ------------------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | /api/auth/register                          | POST            | Register a new user.                                                                                      | `RegisterDto`                                                                                                              |
