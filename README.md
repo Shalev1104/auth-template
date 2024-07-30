@@ -2,7 +2,7 @@
 
 This repository contains a comprehensive authentication template built with NestJS and Typescript.
 It includes various login methods and two-factor authentication (2FA).
-This template Serves as an excellent starting point, a reference for best practices, or a solid foundation for building your custom authentication system.
+This template serves as an excellent starting point, a reference for best practices, or a solid foundation for building your custom authentication system.
 
 ## Features
 
